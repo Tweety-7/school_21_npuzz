@@ -123,15 +123,22 @@ def check_min_ves(spis_node_open):
     return min_v_node
 
 def path_print(min, sp_z):
+    # sp_z - список всех вершин
+    print('печать полного пути')
     sp_path = []
     while min:
         sp_path.append(min.node)
-        for i in sp_z:
-            min_2 = sp_z[i]
-            # if (min.par == min_2):
-            #     min =min_2
-    print(sp_path)
+        for min_2 in sp_z:
+            if (min.par == min_2):
+                min =min_2
+                break
+            if min_2 == sp_z[-1]:
+                min = 0
+        # min = 0
 
+    # print(sp_path)
+    for i in sp_path:
+        print(i)
 
 
 # a = [1,2,5]
@@ -141,7 +148,9 @@ def path_print(min, sp_z):
 # b = '123840765'
 
 
-b = '123860754'
+# b = '123860754'
+b = '120863754'
+
 ch = make_children(b, 3) #  для исходного состояния рождаем детей(макс 4)
 # и добавляем всех в список открытых вершин
 
