@@ -8,10 +8,11 @@ class Node:
 #  == f func
     def __init__(self, size, par, node, step_to_f):
         self.size = size
-        self.node = str(node)
+        self.node = node
         self.par = par
-        self.g = step_to_f
-        self.must_be_str = str(must_be(self.size))
+        self.g = step_to_f #кол-во шагов до
+        self.must_be_str = str(must_be(self.size)).split('/')
+
         self.h = self.ves_h()
         self.f = self.h + self.g
         print(self.f)
@@ -49,8 +50,8 @@ def h_xy (s1, s2):
                 ves += 1
     return ves
 
-def make_children(str_p, n):
-    per_l = list(str_p)
+def make_children(list_p, n):
+    per_l = list_p
     sun = []
 #     у каждого родителя макс 4 сына
 #     n - размер матрицы
@@ -74,7 +75,7 @@ def make_children(str_p, n):
         for i in posit:
             sun_1 = per_l.copy()
             sun_1[i_0],sun_1[i] =per_l[i],  per_l[i_0]
-            sun_2 = ''.join(sun_1)
+            sun_2 = '/'.join(sun_1)
             sun.append(sun_2)
     print('-------------sun-----------')
     print(sun)
@@ -110,9 +111,10 @@ def must_be(n):
     print(str(a))
     for one in a:
         for i in one:
-            st += str(i)
+            st += str(i) + "/"
+    st = st[0:-1]
     print(st)
-    print(list(st))
+    print(st.split('/'))
     return st
 
 def check_min_ves(spis_node_open):
@@ -149,16 +151,16 @@ def path_print(min, sp_z):
 
 
 # b = '123860754'
-b = '120863754'
+b = '1/2/0/8/6/3/7/5/4'
 
-ch = make_children(b, 3) #  для исходного состояния рождаем детей(макс 4)
+ch = make_children(b.split("/"), 3) #  для исходного состояния рождаем детей(макс 4)
 # и добавляем всех в список открытых вершин
 
 n_st = 0
 size_matr = 3
-A = Node(size_matr, None,b, n_st)
+A = Node(size_matr, None,b.split("/"), n_st)
 for c in ch:
-    sp_o.append(Node(size_matr, A, c, n_st))
+    sp_o.append(Node(size_matr, A, c.split("/"), n_st))
 #  после заполнения ночальных условий
 while sp_o:
 #     1. найти в  открытом списке вершину с минимальным весом
@@ -172,7 +174,7 @@ while sp_o:
             for c in child: # вероятно тоже надо проверить что б ещене было
                 # или путь новой короче
                 # хотя путь короче ищем при переборе списка
-                    sp_o.append(Node(size_matr,min,c,min.g))
+                    sp_o.append(Node(size_matr,min,c.split("/"),min.g))
             # sp_o.extend(child)
 #     2. если не конечное состояние
 #         - добавим к закрытым вершинам
