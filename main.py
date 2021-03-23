@@ -14,6 +14,7 @@ class Node:
         self.must_be_str = str(must_be(self.size)).split('/')
 
         self.h = self.ves_h()
+        # self.h = self.ves_Manhattan()
         self.f = self.h + self.g
         print(self.f)
     def ves_h(self): #кол-во цифр не на своем месте
@@ -22,6 +23,47 @@ class Node:
             if self.node[i] != self.must_be_str[i]:
                 ves +=1
         print('from Node===ok')
+        return ves
+    def ves_Manhattan(self):
+        ves = 0
+        sp_sp = []
+        spsp_2 = []
+        sp_0 = []
+        sp_2 = []
+        for i in range(len(self.node)):
+            if i % size_matr == 0 and i != 0:
+                sp_sp.append(sp_0)
+                spsp_2.append(sp_2)
+                sp_0 = []
+                sp_2 = []
+                sp_2.append(self.must_be_str[i])
+                sp_0.append(self.node[i])
+            else:
+                sp_0.append(self.node[i])
+                sp_2.append(self.must_be_str[i])
+        sp_sp.append(sp_0)
+        spsp_2.append(sp_2)
+        print(sp_sp)
+        df_1 = pd.DataFrame(sp_sp)
+        print(df_1)
+        df_must_be = pd.DataFrame(spsp_2)
+        print(df_must_be)
+        print(df_1.shape[1])
+        for i in range(df_1.shape[0]):
+            # print(i)
+            for j in range(df_1.shape[1]):
+                # print(j)
+                num = df_1.iloc[i,j]
+                # print(num)
+                ni = df_must_be[df_must_be == num].index[0]
+                nj = df_must_be[df_must_be == num].index[1]
+                ves += abs(i - ni) + abs(j - nj)
+        # for i in range(df_1.shape[0]):
+        #     for j in range(df_1.shape[1]:
+        #         print(i,j)
+                # num = df_1[i,j]
+                # ind = df_must_be[df_must_be == num]
+                # print(ind)
 
         # print(self.must_be_str)
         # print(self.node)
@@ -31,7 +73,7 @@ class Node:
 
 # def h_xy(x1,y1, x2, y2):
 #     # предположение до достижение конца(минимальное кол-во перестановок
-#     # исходя из координат)
+#     # исходя из координат) == МАНХЕТАН
 #     # для каждого числа будет только одно конечное значение
 #
 #     # вес = кол-ву перемещений из 1 в 2
@@ -126,6 +168,7 @@ def check_min_ves(spis_node_open):
 
 def path_print(min, sp_z):
     # sp_z - список всех вершин
+    count = 0
     print('печать полного пути')
     sp_path = []
     while min:
@@ -141,16 +184,14 @@ def path_print(min, sp_z):
     # print(sp_path)
     for sp in sp_path:
         # print(sp)
+        count += 1
         for i in range(len(sp)):
             if i % size_matr == size_matr -1:
                 print(sp[i], end='\n')
             else:
                 print(sp[i], end=' ')
-
-
-
-
-
+        print("-----след ход")
+    print("кол-во состояний = ", count)
 # a = [1,2,5]
 # b = list(map(str, a))
 # c = ''.join(b)
