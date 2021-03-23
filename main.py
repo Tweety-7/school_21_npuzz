@@ -139,8 +139,16 @@ def path_print(min, sp_z):
         # min = 0
 
     # print(sp_path)
-    for i in sp_path:
-        print(i)
+    for sp in sp_path:
+        # print(sp)
+        for i in range(len(sp)):
+            if i % size_matr == size_matr -1:
+                print(sp[i], end='\n')
+            else:
+                print(sp[i], end=' ')
+
+
+
 
 
 # a = [1,2,5]
@@ -152,12 +160,38 @@ def path_print(min, sp_z):
 
 # b = '123860754'
 b = '1/2/0/8/6/3/7/5/4'
+bb = ''
+with open("/home/arina/Desktop/npuzz/one", "r") as file:
+    size_matr = int(file.readline())
+    line = file.readline()
+    n_str = 1
+    while line:
+        # line += ' '
+        plus = '/'.join(line.split())
+        bb += '/'.join(line.split())
+        bb += '/'# где конец строки нечего заменять =(
+        line = file.readline()
+        if (len(plus.split('/'))) != size_matr:
+            print("Неверное кол-во чисел в строке =", n_str)
+            exit(0)
+        n_str += 1
+bb = bb[0: -1]
+if (n_str - 1) != size_matr:
+    print("Неверное кол-во строк в матрице")
+    exit(0)
+print("read file = ok")
+print(bb)
+b = bb
 
+
+
+# b = "/".join(b.split())
+# print(b)
 ch = make_children(b.split("/"), 3) #  для исходного состояния рождаем детей(макс 4)
 # и добавляем всех в список открытых вершин
 
 n_st = 0
-size_matr = 3
+# size_matr = 3
 A = Node(size_matr, None,b.split("/"), n_st)
 for c in ch:
     sp_o.append(Node(size_matr, A, c.split("/"), n_st))
