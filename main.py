@@ -180,7 +180,7 @@ def path_print(min, sp_z):
             if min_2 == sp_z[-1]:
                 min = 0
         # min = 0
-
+    sp_path.reverse()
     # print(sp_path)
     for sp in sp_path:
         # print(sp)
@@ -200,9 +200,9 @@ def path_print(min, sp_z):
 
 
 # b = '123860754'
-b = '1/2/0/8/6/3/7/5/4'
+# b = '1/2/0/8/6/3/7/5/4'
 bb = ''
-with open("/home/arina/Desktop/npuzz/one", "r") as file:
+with open("/home/arina/Desktop/npuzz/two.txt", "r") as file:
     size_matr = int(file.readline())
     line = file.readline()
     n_str = 1
@@ -221,21 +221,29 @@ if (n_str - 1) != size_matr:
     print("Неверное кол-во строк в матрице")
     exit(0)
 print("read file = ok")
-print(bb)
+print("bb ' ",bb)
 b = bb
 
 
 
 # b = "/".join(b.split())
 # print(b)
-ch = make_children(b.split("/"), 3) #  для исходного состояния рождаем детей(макс 4)
+ch = make_children(b.split("/"), size_matr) #  для исходного состояния рождаем детей(макс 4)
 # и добавляем всех в список открытых вершин
-
+import sys
 n_st = 0
 # size_matr = 3
 A = Node(size_matr, None,b.split("/"), n_st)
+if A.must_be_str == A.node:
+    print("исходное состояние == конечному")
+    sys.exit()
+
 for c in ch:
-    sp_o.append(Node(size_matr, A, c.split("/"), n_st))
+    ch_c = Node(size_matr, A, c.split("/"), n_st)
+    # if ch_c.node == ch_c.must_be_str:
+    #     print("одна перестановка - подвинь на 0 == конечное")
+    #     sys.exit()
+    sp_o.append(ch_c)
 #  после заполнения ночальных условий
 while sp_o:
 #     1. найти в  открытом списке вершину с минимальным весом
@@ -256,6 +264,7 @@ while sp_o:
 #         - удалить из открытого
 #           - найдем всех детей и добавим в список открытых
         else:
+            sp_z.append(min)
             print("КОНЕЦ", min.node)
             path_print(min, sp_z)
 
