@@ -2,112 +2,13 @@ import pandas as pd
 import math
 import time
 import numpy as np
+from node_c import Node
 sp_o = [] #список открытых = непроверенных вершин - тут все дети
 sp_z = [] # список проверенных = уже встречаемых = закрытых вершин
 sp_o = np.array([])
 
 
-class Node:
-#    размер, родитель, строка всех значений(узел), кол-во шагов до точки
-#  == f func
-    def __init__(self, size, par, node, step_to_f):
-        self.size = size
-        self.node = node
-        self.par = par
-        self.g = step_to_f #кол-во шагов до
-        self.must_be_str = str(must_be(self.size)).split('/')
 
-        # self.h = self.ves_h()
-        # self.h = round(self.ves_pifag())
-        self.h = round(self.ves_Manhattan())
-        self.f = self.h + self.g
-        # print(self.f)
-    def ves_h(self): #кол-во цифр не на своем месте
-        ves = 0
-        for i in range(len(self.node)):
-            if self.node[i] != self.must_be_str[i]:
-                ves += 1
-        # print('from Node===ok')
-        return ves
-    def ves_Manhattan(self):
-        ves = 0
-        sp_sp = []
-        spsp_2 = []
-        sp_0 = []
-        sp_2 = []
-        for i in range(len(self.node)):
-            if i % size_matr == 0 and i != 0:
-                sp_sp.append(sp_0)
-                spsp_2.append(sp_2)
-                sp_0 = []
-                sp_2 = []
-                sp_2.append(self.must_be_str[i])
-                sp_0.append(self.node[i])
-            else:
-                sp_0.append(self.node[i])
-                sp_2.append(self.must_be_str[i])
-        sp_sp.append(sp_0)
-        spsp_2.append(sp_2)
-        # print(sp_sp) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        df_1 = pd.DataFrame(sp_sp)
-        # print(df_1)
-        df_must_be = pd.DataFrame(spsp_2)
-        # print(df_must_be)
-        # print(df_1.shape[1])
-        for i in range(df_1.shape[0]):
-            # print(i)
-            for j in range(df_1.shape[1]):
-                # print(j)
-                num = df_1.iloc[i, j]
-                # print(num)
-                ni = df_must_be[df_must_be == num].index[0]
-                nj = df_must_be[df_must_be == num].index[1]
-                ves += abs(i - ni) + abs(j - nj)
-        # for i in range(df_1.shape[0]):
-        #     for j in range(df_1.shape[1]:
-        #         print(i,j)
-                # num = df_1[i,j]
-                # ind = df_must_be[df_must_be == num]
-                # print(ind)
-
-        # print(self.must_be_str)
-        # print(self.node)
-        return ves
-
-
-    def ves_pifag(self):
-        ves = 0
-        sp_sp = []
-        spsp_2 = []
-        sp_0 = []
-        sp_2 = []
-        for i in range(len(self.node)):
-            if i % size_matr == 0 and i != 0:
-                sp_sp.append(sp_0)
-                spsp_2.append(sp_2)
-                sp_0 = []
-                sp_2 = []
-                sp_2.append(self.must_be_str[i])
-                sp_0.append(self.node[i])
-            else:
-                sp_0.append(self.node[i])
-                sp_2.append(self.must_be_str[i])
-        sp_sp.append(sp_0)
-        spsp_2.append(sp_2)
-
-        df_1 = pd.DataFrame(sp_sp)
-        # print(df_1)
-        df_must_be = pd.DataFrame(spsp_2)
-        # print(df_must_be)
-        # print(df_1.shape[1])
-        for i in range(df_1.shape[0]):
-            # print(i)
-            for j in range(df_1.shape[1]):
-                num = df_1.iloc[i, j]
-                ni = df_must_be[df_must_be == num].index[0]
-                nj = df_must_be[df_must_be == num].index[1]
-                ves += math.sqrt((i - ni) * (i - ni) + (j - nj) * (j - nj))
-        return ves
 
 
 # def h_xy(x1,y1, x2, y2):
@@ -164,41 +65,6 @@ def make_children(list_p, n):
     # print(sun)
     return sun
 
-def must_be(n):
-    # конечная растановка фигур (спираль)
-    # возвращает идеальный конечный узел = строку
-    a = [[0] * n for _ in range(n)]
-    st = ''
-    num = 1
-    vit = 0
-    a[n // 2][n // 2] = 0
-    for v in range(n // 2):
-        for i in range(n - vit):
-            a[v][i + v] = num
-            num += 1
-        for i in range(v + 1, n - v):
-           a[i][-v - 1] = num
-           num += 1
-        for i in range(v+1, n -v):
-            a[-v-1][-i-1] = num
-            num +=1
-        for i in range(v+1, n-(v+1)):
-            a[-i-1][v] = num
-            num +=1
-        vit +=2
-        ser = n // 2
-        if n % 2 == 0:
-            a[ser][ser - 1] = 0
-        else:
-            a[ser][ser] = '0'
-    # print(str(a))
-    for one in a:
-        for i in one:
-            st += str(i) + "/"
-    st = st[0:-1]
-    # print(st)
-    # print(st.split('/'))
-    return st
 
 def check_min_ves(sp_o, sp_node_z):
     # sp_node_z = [sp_z[i].node for i in range(len(sp_z))]
@@ -273,7 +139,7 @@ def path_print(min, sp_z):
 # b = '1/2/0/8/6/3/7/5/4'
 t_1 = time.time()
 bb = ''
-with open("/home/tweety/PycharmProjects/pythonProject/pythonProject/puzzle/npuzz/one", "r") as file:
+with open("/home/arina/Desktop/npuzz/one", "r") as file:
     size_matr = int(file.readline())
     line = file.readline()
     n_str = 1
@@ -407,5 +273,4 @@ print(childrens)
 #  при том каждую аершину берем с минимальным g весом???
 #
 
-# (self, size, par, el, step_to_f):
 
