@@ -1,8 +1,18 @@
-import pandas as pd
-import math
+from Printer import Printer
 import time
 import numpy as np
 from node_c import Node
+import sys
+import argparse
+from utils import check_file
+from const import Mode
+from visu import visu
+from images import create_image
+import warnings
+
+warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
 sp_o = [] #список открытых = непроверенных вершин - тут все дети
 sp_z = [] # список проверенных = уже встречаемых = закрытых вершин
 sp_o = np.array([])
@@ -61,7 +71,7 @@ def make_children(list_p, n):
             sun_2 = '/'.join(sun_1)
             sun.append(sun_2)
     # print('-------------sun-----------')
-    print(list_p)
+    Printer.print_debug(list_p)
     # print(sun)
     return sun
 
@@ -75,7 +85,7 @@ def check_min_ves(sp_o, sp_node_z):
     # if spis_node_open[0].node not in sp_node_z:
     # min_v_node = spis_node_open[0]
     sp_f_o = [int(sp_o[i].f) for i in range(len(sp_o))]
-    print(sp_f_o)
+    Printer.print_debug(sp_f_o)
     min_smfo = sp_f_o[0]
     for i in sp_f_o:
         if i < min_smfo:
@@ -102,10 +112,7 @@ def check_min_ves(sp_o, sp_node_z):
             #     min_v_node =
     return min_v_node
 
-def path_print(min, sp_z):
-    # sp_z - список всех вершин
-    count = 0
-    print('печать полного пути')
+def get_path(min, sp_z):
     sp_path = []
     while min:
         sp_path.append(min.node)
@@ -117,29 +124,69 @@ def path_print(min, sp_z):
                 min = 0
         # min = 0
     sp_path.reverse()
-    # print(sp_path)
+    return sp_path
+
+def print_path(min, sp_z):
+    # sp_z - список всех вершин
+    
+    sp_path = get_path(min, sp_z)
+    print(f"number of moves = {len(sp_path)}")
+    Printer.print_debug('печать полного пути')
+    count = 0
     for sp in sp_path:
-        # print(sp)
         count += 1
+        print(f"Move {count}")
         for i in range(len(sp)):
             if i % size_matr == size_matr -1:
                 print(sp[i], end='\n')
             else:
                 print(sp[i], end=' ')
-        print("-----след ход")
-    print("кол-во состояний = ", count)
+        print()#"-----next move")
+    print(sp_path)
 # a = [1,2,5]
 # b = list(map(str, a))
 # c = ''.join(b)
 # print(c)
 # b = '123840765'
 
-
 # b = '123860754'
 # b = '1/2/0/8/6/3/7/5/4'
+
+
+
+
+def get_filepath():
+    filename = sys.argv[1]
+    check_file(filename)
+    return filename
+
+
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('filename')
+    parser.add_argument("-vis", action="store_true", help="Enable visualization")
+    parser.add_argument("-d", "--debug", action="store_true", help="Enable visualization")
+    args = parser.parse_args()
+    return args
+
+def handle_argv():
+    args = get_args()
+    if args.vis:
+        Mode.VIS_MODE = True
+    if args.debug:
+        Mode.DEBUG_MODE = True
+    return
+    
+
+
+if __name__ != "__main__":
+    exit()
+handle_argv()
+
 t_1 = time.time()
 bb = ''
-with open("/home/arina/Desktop/npuzz/one", "r") as file:
+
+with open(get_filepath(), "r") as file:
     size_matr = int(file.readline())
     line = file.readline()
     n_str = 1
@@ -150,15 +197,13 @@ with open("/home/arina/Desktop/npuzz/one", "r") as file:
         bb += '/'# где конец строки нечего заменять =(
         line = file.readline()
         if (len(plus.split('/'))) != size_matr:
-            print("Неверное кол-во чисел в строке =", n_str)
-            exit(0)
+            Printer.print_error_exit("Неверное кол-во чисел в строке =", n_str)
         n_str += 1
 bb = bb[0: -1]
 if (n_str - 1) != size_matr:
-    print("Неверное кол-во строк в матрице")
-    exit(0)
-print("read file = ok")
-print("bb ' ",bb)
+    Printer.print_error_exit("Неверное кол-во строк в матрице")
+Printer.print_debug("read file = ok")
+Printer.print_debug(f"bb ' {bb}")
 b = bb
 childrens = 0
 
@@ -168,7 +213,6 @@ childrens = 0
 ch = make_children(b.split("/"), size_matr) #  для исходного состояния рождаем детей(макс 4)
 childrens += 1
 # и добавляем всех в список открытых вершин
-import sys
 
 # size_matr = 3
 A = Node(size_matr, None, b.split("/"), 0)
@@ -176,13 +220,12 @@ A = Node(size_matr, None, b.split("/"), 0)
 # print(A is A2)
 sp_o = np.append(sp_o, A)
 if A.must_be_str == A.node:
-    print("исходное состояние == конечному")
-    sys.exit()
+    Printer.print_exit("исходное состояние == конечному")
 
 for c in ch:
     ch_c = Node(size_matr, A, c.split("/"), 1)
     if ch_c.node == ch_c.must_be_str:
-        print("одна перестановка - подвинь на 0 == конечное")
+        Printer.print_debug("одна перестановка - подвинь на 0 == конечное")
     #     sys.exit()
     sp_o_node = [sp_o[i].node for i in range(len(sp_o))]
     sp_z_node = [sp_z[i].node for i in range(len(sp_z))]
@@ -194,13 +237,13 @@ sp_z.append(A) # создали всех детей == закрыли верши
 # i = np.where(a == A)
 i = list(sp_o).index(A)
 sp_o = np.delete(sp_o, i)
-print(sp_o)
-
+Printer.print_debug(sp_o)
+success = 0
 while len(sp_o) >= 1:
 #     1. найти в  открытом списке вершину с минимальным весом
         min = check_min_ves(sp_o, sp_z_node)
         # min = sp_o[0]
-        print(min.f, min.g, min.h)
+        Printer.print_debug(f'{min.f} {min.g} {min.h}')
         if min == 0:
             print("нет открытых вершин")
             sys.exit()
@@ -256,21 +299,40 @@ while len(sp_o) >= 1:
 #           - найдем всех детей и добавим в список открытых
         else:
             sp_z.append(min)
-            print("КОНЕЦ", min.node)
-            path_print(min, sp_z)
-
+            Printer.print_debug(f"КОНЕЦ {min.node}")
+            success = 1
+            
+            
             # sp_o.remove(min)
             i = list(sp_o).index(min)
             sp_o = np.delete(sp_o, i)
             sp_o = []
             # print(sp_z)
-            print("всё оке")
+            Printer.print_debug("всё оке")
 t_2 = time.time()
 dt = t_2 - t_1
-print("время = ", dt)
-print(childrens)
-#     если конечное - выходим - востанавливаем ролдителей всего пути?
-#  при том каждую аершину берем с минимальным g весом???
+print(f"complexity in time = {dt:0.6f}")
+print(f"complexity in size = {childrens}")
+if success:
+    print_path(min, sp_z)
+    if Mode.VIS_MODE:
+        schema = [int(x) for x in b.split("/")]
+        schema = [x.tolist() for x in np.array_split(schema, 3)]
+        
+        path = get_path(min, sp_z)
+        start_board = path[-1][:]
+        print(start_board)
+        l = []
+        for p in path:
+            p = [int(x) for x in p]
+            l.append([x.tolist() for x in np.array_split(p, 3)])
+        
+        print(start_board)
+        create_image(start_board)
+        visu(schema, l , size_matr)
+
+#   если конечное - выходим - востанавливаем ролдителей всего пути?
+#   при том каждую аершину берем с минимальным g весом???
 #
 
 

@@ -1,3 +1,5 @@
+import math
+import pandas as pd
 
 def must_be(n):
     # конечная растановка фигур (спираль)
