@@ -1,25 +1,26 @@
-import sys, os, time
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
 import numpy as np
 
-class NPuzzle:
-	def __init__(self, gs, ts, ms, grid, grid_full):
-		self.gs, self.ts, self.ms = gs, ts, gs
-		self.tiles_len = gs[0] * gs[1] - 1
-		self.tiles = [(x,y) for y in range(gs[1]) for x in range(gs[0])]
+class Visualizator:
+	def __init__(self, grid_size, ts, ms, grid, grid_full):
+		self.grid_size, self.ts, self.ms = grid_size, ts, grid_size
+		self.tiles_len = grid_size[0] * grid_size[1] - 1
+		self.tiles = [(x,y) for y in range(grid_size[1]) for x in range(grid_size[0])]
 		self.tiles_v = [x for x in grid]
-		self.tilespos = [(x*(ts+ms)+ms,y*(ts+ms)+ms) for y in range(gs[1]) for x in range(gs[0])]
-		self.tilesPOS = {(x,y):(x*(ts+ms)+ms,y*(ts+ms)+ms) for y in range(gs[1]) for x in range(gs[0])}
+		self.tilespos = [(x*(ts+ms)+ms,y*(ts+ms)+ms) for y
+            in range(grid_size[1])
+            for x in range(grid_size[0])]
+		self.tilesPOS = {(x,y):(x*(ts+ms)+ms,y*(ts+ms)+ms) for y
+            in range(grid_size[1])
+            for x in range(grid_size[0])}
 		self.prev = None
 		self.resolution, self.i, self.reverse, self.next = 1, 1, 0, 0
 		self.speed_slide = 450
-		
 		self.images = []
 		self.grid_full = grid_full
 		self.grid_sol = np.concatenate(grid_full[-1])
-		w, h = gs[0] * (ts + ms) + ms, gs[1] * (ts + ms) + ms
-		self.rect = pygame.Rect(0, 0, gs[0] * (ts + ms) + ms, gs[1] * (ts + ms) + ms)
+		w, h = grid_size[0] * (ts + ms) + ms, grid_size[1] * (ts + ms) + ms
+		self.rect = pygame.Rect(0, 0, grid_size[0] * (ts + ms) + ms, grid_size[1] * (ts + ms) + ms)
 		pic = pygame.transform.smoothscale(pygame.image.load("resources/default.jpg"), self.rect.size)
 		for i in grid:
 			x, y = self.tilespos[np.where(self.grid_sol == i)[0][0]]
@@ -95,10 +96,10 @@ class NPuzzle:
 			if event.key == pygame.K_ESCAPE:
 				pygame.quit()
 				exit()
-			if event.key == pygame.K_KP_MINUS:
+			if event.key == pygame.K_MINUS or event.key == pygame.K_KP_MINUS:
 				if self.speed_slide > 50:
 					self.speed_slide -= 20
-			if event.key == pygame.K_KP_PLUS:
+			if event.key == pygame.K_PLUS or event.key == pygame.K_KP_PLUS:
 				if self.speed_slide < 600:
 					self.speed_slide += 20
 			if event.key == pygame.K_r and self.resolution == 0:
@@ -110,38 +111,3 @@ class NPuzzle:
 				self.reverse = 1
 			if event.key == pygame.K_LEFT and self.resolution == 0:
 				self.next = 1
-
-def main(size, h, w, grid, size_ts, grid_full):
-	pygame.init()
-	os.environ['SDL_VIDEO_CENTERED'] = '1'
-	pygame.display.set_caption("NPuzzle")
-	screen = pygame.display.set_mode((h, w))
-	fpsclock = pygame.time.Clock()
-	program = NPuzzle((size, size), size_ts, 5, grid, grid_full)
-	while True:
-		dt = fpsclock.tick() / 1000
-		screen.fill((0, 0, 0))
-		program.draw(screen)
-		pygame.display.flip()
-		for event in pygame.event.get():
-			if event.type == pygame.QUIT:
-				pygame.quit()
-				exit()
-			program.events(event)
-		program.update(dt)
-
-def visu(grid, steps, n):
-	if n > 20:
-		print("Max puzzle size is 20x20, otherwise it does not fit the screen.")
-		return
-	if steps == None:
-		print("Visualizer is useless if puzzle is already solved.")
-		return
-	if n > 4:
-		size_ts = int(800 / n)
-		h, w = size_ts * n + n * 5, size_ts * n + n * 5
-	else:
-		h, w = 200 * n + n * 5, 200 * n + n * 5
-		size_ts = 200
-	steps.insert(0, grid)
-	main(n, h, w, np.concatenate(grid), size_ts, steps)

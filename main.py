@@ -6,7 +6,7 @@ import sys
 import argparse
 from utils import check_file
 from const import Mode
-from visu import visu
+from visualization import visualizate
 from images import create_image
 import warnings
 
@@ -322,14 +322,14 @@ if success:
         path = get_path(min, sp_z)
         start_board = path[-1][:]
         print(start_board)
-        l = []
+        fullpath = []
         for p in path:
             p = [int(x) for x in p]
-            l.append([x.tolist() for x in np.array_split(p, 3)])
+            fullpath.append([x.tolist() for x in np.array_split(p, 3)])
         
         print(start_board)
         create_image(start_board)
-        visu(schema, l , size_matr)
+        visualizate(schema, fullpath , size_matr)
 
 #   если конечное - выходим - востанавливаем ролдителей всего пути?
 #   при том каждую аершину берем с минимальным g весом???
