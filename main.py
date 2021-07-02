@@ -3,6 +3,9 @@ import math
 import time
 import numpy as np
 from node_c import Node
+from node_c import must_be
+import heapq
+
 sp_o = [] #список открытых = непроверенных вершин - тут все дети
 sp_z = [] # список проверенных = уже встречаемых = закрытых вершин
 sp_o = np.array([])
@@ -31,6 +34,47 @@ sp_o = np.array([])
 #             if df2[i][j] != df1[i][j]:
 #                 ves += 1
 #     return ves
+# def count_inv_size(size_matr):
+#     if size_matr % 2 == 1:
+#         return 0
+#     else: # для чётной длины стороны
+#         # вернуть номер строки в которой 0
+#         return (size_matr / 2) + 1
+
+
+def count_inv(l_b,size_matr):
+    # print("ook")
+    inx_0 = l_b.index(str(0))
+    # print(inx_0)
+    inv = inx_0//size_matr + 1
+    # print(inv)
+    # inv = (size_matr / 2) + 1 # для чётной длины стороны += номер строки в которой 0
+    if size_matr % 2 == 1: # для нечетной
+        inv = 0
+    for i in range(len(l_b)):
+        b_i = l_b[i]
+        for b_k in l_b[i + 1 : len(l_b)]:
+            if b_k != str(0) and b_i != str(0):
+                if b_i > b_k:
+                    inv += 1
+    return inv
+
+
+def can_i_do_it(b,n):
+    list_b = b.split('/')
+    str_must = must_be(n)
+    list_must = str_must.split('/')
+    # для двух этих матриц посчитаем инверсию
+    # print("теперь посчитать инверсию")
+    c_b = count_inv(list_b, n)
+    c_m = count_inv(list_must, n)
+    if c_b % 2 != c_m % 2:
+        print("для данной матрицы решения неть =(. инверсии не совпадают")
+        exit(0)
+    # return
+
+
+
 
 def make_children(list_p, n):
     per_l = list_p
@@ -61,10 +105,19 @@ def make_children(list_p, n):
             sun_2 = '/'.join(sun_1)
             sun.append(sun_2)
     # print('-------------sun-----------')
-    print(list_p)
+    # print(list_p)
     # print(sun)
     return sun
 
+
+
+# Функция `heappop()` модуля `heapq` возвращает и удаляет наименьший элемент из кучи `heap`, сохраняя инвариант кучи.
+
+# heapify — эта функцияпреобразует обычный список в кучу.Врезультирующейкуче наименьший элемент помещается в позицию индекса 0. Но
+# остальные элементы данных необязательносортируются.
+# heappush — этафункциядобавляетэлемент вкучубезизменениятекущейкучи.
+# heappop — этафункциявозвращает наименьший элемент данных из кучи.
+# heapreplace —
 
 def check_min_ves(sp_o, sp_node_z):
     # sp_node_z = [sp_z[i].node for i in range(len(sp_z))]
@@ -75,16 +128,38 @@ def check_min_ves(sp_o, sp_node_z):
     # if spis_node_open[0].node not in sp_node_z:
     # min_v_node = spis_node_open[0]
     sp_f_o = [int(sp_o[i].f) for i in range(len(sp_o))]
-    print(sp_f_o)
-    min_smfo = sp_f_o[0]
-    for i in sp_f_o:
-        if i < min_smfo:
-            min_smfo = i
-    i = sp_f_o.index(min_smfo)
-    return sp_o[i]
+
+    sp_o_d = {i: sp_o[i].f for i in range(len(sp_o))}
+    inv_d = {}
+    for key, value in sp_o_d.items():
+        if value not in inv_d.keys():
+            inv_d[value] = []
+            inv_d[value].append(key)
+        else:
+            inv_d[value].append(key)
+
+        # перевод в кучу
+    heapq.heapify(sp_f_o)
+    min_smfo = sp_f_o[0] #точно минимальное значение
+    i = inv_d[min_smfo].pop(0)
+    while i < len(sp_o):
+        if sp_o[i] not in sp_node_z:
+            return sp_o[i]
+        i = inv_d[min_smfo].pop(0)
+    return 0
 
 
-    min_v_node = 0
+
+    # print(sp_f_o)
+    # min_smfo = sp_f_o[0]
+    # for i in sp_f_o:
+    #     if i < min_smfo:
+    #         min_smfo = i
+    # i = sp_f_o.index(min_smfo)
+    # return sp_o[i]
+
+
+    # min_v_node = 0
     # for node in sp_o:
     #     if type(min_v_node) == type(node):
     #         if node.node not in sp_node_z and node.f < min_v_node.f:
@@ -139,7 +214,7 @@ def path_print(min, sp_z):
 # b = '1/2/0/8/6/3/7/5/4'
 t_1 = time.time()
 bb = ''
-with open("/home/arina/Desktop/npuzz/one", "r") as file:
+with open("/home/arina/Desktop/npuzz/two", "r") as file:
     size_matr = int(file.readline())
     line = file.readline()
     n_str = 1
@@ -158,13 +233,15 @@ if (n_str - 1) != size_matr:
     print("Неверное кол-во строк в матрице")
     exit(0)
 print("read file = ok")
-print("bb ' ",bb)
+# print("bb ' ",bb)
 b = bb
 childrens = 0
 
 
+
 # b = "/".join(b.split())
 # print(b)
+can_i_do_it(b, size_matr) # проверим возможность решения
 ch = make_children(b.split("/"), size_matr) #  для исходного состояния рождаем детей(макс 4)
 childrens += 1
 # и добавляем всех в список открытых вершин
@@ -256,7 +333,7 @@ while len(sp_o) >= 1:
 #           - найдем всех детей и добавим в список открытых
         else:
             sp_z.append(min)
-            print("КОНЕЦ", min.node)
+            # print("КОНЕЦ", min.node)
             path_print(min, sp_z)
 
             # sp_o.remove(min)
