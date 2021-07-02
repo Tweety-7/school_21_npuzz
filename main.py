@@ -5,6 +5,7 @@ import numpy as np
 from node_c import Node
 from node_c import must_be
 import heapq
+import sys
 
 sp_o = [] #список открытых = непроверенных вершин - тут все дети
 sp_z = [] # список проверенных = уже встречаемых = закрытых вершин
@@ -214,7 +215,8 @@ def path_print(min, sp_z):
 # b = '1/2/0/8/6/3/7/5/4'
 t_1 = time.time()
 bb = ''
-with open("/home/arina/Desktop/npuzz/two", "r") as file:
+file_name = sys.argv[1]
+with open(file_name, "r") as file:
     size_matr = int(file.readline())
     line = file.readline()
     n_str = 1

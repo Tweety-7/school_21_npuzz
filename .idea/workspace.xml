@@ -2,24 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4dc1666c-8531-405c-8a15-9872a96fffc2" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/n_puzz_new.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/npuzz.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/h_15" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/m_15" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/m_15_2" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/m_15_7" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/m_15_numpy" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/one_14" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/p_15" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ttt_h_7" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ttt_m_7" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ttt_p_7" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/two" beforeDir="false" afterPath="$PROJECT_DIR$/two" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
