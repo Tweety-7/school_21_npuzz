@@ -216,6 +216,10 @@ def path_print(min, sp_z):
 t_1 = time.time()
 bb = ''
 file_name = sys.argv[1]
+try:
+    num_h_ver = sys.argv[2]
+except Exception:
+    num_h_ver = 0
 with open(file_name, "r") as file:
     size_matr = int(file.readline())
     line = file.readline()
@@ -250,7 +254,7 @@ childrens += 1
 import sys
 
 # size_matr = 3
-A = Node(size_matr, None, b.split("/"), 0)
+A = Node(size_matr, None, b.split("/"), 0, num_h_ver)
 # A2 = Node(size_matr, None, b.split("/"), n_st)
 # print(A is A2)
 sp_o = np.append(sp_o, A)
@@ -259,7 +263,7 @@ if A.must_be_str == A.node:
     sys.exit()
 
 for c in ch:
-    ch_c = Node(size_matr, A, c.split("/"), 1)
+    ch_c = Node(size_matr, A, c.split("/"), 1, num_h_ver)
     if ch_c.node == ch_c.must_be_str:
         print("одна перестановка - подвинь на 0 == конечное")
     #     sys.exit()
@@ -297,7 +301,7 @@ while len(sp_o) >= 1:
                 sp_o_ves = [sp_o[i].f for i in range(len(sp_o))]
                 sp_z_node = [sp_z[i].node for i in range(len(sp_z))]
                 sp_z_ves = [sp_z[i].f for i in range(len(sp_z))]
-                ch_c = Node(size_matr,min,c.split("/"), min.g + 1)
+                ch_c = Node(size_matr,min,c.split("/"), min.g + 1, num_h_ver)
                 # print(ch_c.f)
                 if ch_c.node not in sp_o_node and ch_c.node not in sp_z_node:
                     sp_o = np.append(sp_o, ch_c) # нет ни в закрытом, ни в открытом
