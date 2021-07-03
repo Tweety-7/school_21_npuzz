@@ -43,8 +43,8 @@ class Node:
 #    размер, родитель, строка всех значений(узел), кол-во шагов до точки
 #  == f func
     def __init__(self, size, par, node, step_to_f, ver_h=0):
-        print('nooooooooooooooode')
-        print(ver_h)
+        # print('nooooooooooooooode')
+        # print(ver_h)
         self.size = size
         self.node = node
         self.par = par
@@ -146,3 +146,23 @@ class Node:
                 nj = df_must_be[df_must_be == num].index[1]
                 ves += math.sqrt((i - ni) * (i - ni) + (j - nj) * (j - nj))
         return ves
+# def h_xy(x1,y1, x2, y2):
+#     # предположение до достижение конца(минимальное кол-во перестановок
+#     # исходя из координат) == МАНХЕТАН
+#     # для каждого числа будет только одно конечное значение
+#
+#     # вес = кол-ву перемещений из 1 в 2
+#     return (abs(x2-x1) + abs(y2 -y1))
+# не сначала сделаю прост по кол-ву фишек не на своих
+#  местах/ не знаю где лучше кооэф хранить
+
+# def h_xy (s1, s2):
+#     ves = 0
+#     # перевести строку в дф?
+#     df1 = pd.DataFrame(s1)
+#     df2 = pd.DataFrame(s2)
+#     for i in range(len(df1)):
+#         for j in range(df1):
+#             if df2[i][j] != df1[i][j]:
+#                 ves += 1
+#     return ves
