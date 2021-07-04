@@ -6,13 +6,14 @@ from node_c import Node
 from node_c import must_be
 import heapq
 import sys
-
+import queue
 sp_o = []  # список открытых = непроверенных вершин - тут все дети
 sp_z = []  # список проверенных = уже встречаемых = закрытых вершин
 sp_o = np.array([])
-spo_heap = []
-spo_heap = heapq.heapify(spo_heap)
-
+# spo_heap = []
+# heapq.heapify(spo_heap)
+# вместо heap прбую очередь приоритетную
+q = queue.PriorityQueue()
 
 def count_inv(l_b, size_matr):
     inx_0 = l_b.index(str(0))
@@ -222,6 +223,7 @@ A = Node(size_matr, None, b.split("/"), 0, num_h_ver)
 # A2 = Node(size_matr, None, b.split("/"), n_st)
 # print(A is A2)
 sp_o = np.append(sp_o, A)
+
 if A.must_be_str == A.node:
     print("исходное состояние == конечному")
     sys.exit()
@@ -235,6 +237,9 @@ for c in ch:
     sp_z_node = [sp_z[i].node for i in range(len(sp_z))]
     if ch_c.node not in sp_o_node and ch_c.node not in sp_z_node:
         sp_o = np.append(sp_o, ch_c)
+        q.put((ch_c.f, ch_c))
+        # if (ch_c.f, ch_c) not in spo_heap:
+        #     heapq.heappush(spo_heap, (ch_c.f, ch_c))
 #  после заполнения ночальных условий
 sp_z.append(A)  # создали всех детей == закрыли вершину
 # sp_o.remove(A)
@@ -245,7 +250,23 @@ sp_o = np.delete(sp_o, i)
 
 while len(sp_o) >= 1:
     #     1. найти в  открытом списке вершину с минимальным весом
-    min = check_min_ves(sp_o, sp_z_node)
+    # min = check_min_ves(sp_o, sp_z_node)
+    if not q.empty():
+        min_q = q.get()
+        min = min_q[1]
+    # if len(spo_heap) > 0:
+    #     min_h = heapq.heappop(spo_heap)
+    #     min = min_h[1]
+
+        while min in sp_z and not q.empty():
+            min_q = q.get()
+            min = min_q[1]
+
+    else:
+        min = check_min_ves(sp_o, sp_z_node)
+    # while min in sp_z and len(spo_heap) > 0:
+    #     min_h = heapq.heappop(spo_heap)
+    #     min = min_h[1]
     # я вкрнула и удалила
     # print(min.f, min.g, min.h)
     if min == 0:
@@ -269,6 +290,9 @@ while len(sp_o) >= 1:
             # print(ch_c.f)
             if ch_c.node not in sp_o_node and ch_c.node not in sp_z_node:
                 sp_o = np.append(sp_o, ch_c)  # нет ни в закрытом, ни в открытом
+                q.put((ch_c.f, ch_c))
+                # if (ch_c.f, ch_c) not in spo_heap:
+                #     heapq.heappush(spo_heap, (ch_c.f, ch_c))
             elif ch_c.node in sp_z_node:
                 ii = sp_z_node.index(ch_c.node)
                 if sp_z_ves[ii] > ch_c.f:
