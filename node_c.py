@@ -60,6 +60,8 @@ class Node:
         #
         self.f = self.h + self.g
         # print(self.f)
+    def __lt__(self, other):# >
+        return (self.g > other.g)
     def ves_h(self): #кол-во цифр не на своем месте
         ves = 0
         for i in range(len(self.node)):

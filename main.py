@@ -10,6 +10,8 @@ import sys
 sp_o = []  # список открытых = непроверенных вершин - тут все дети
 sp_z = []  # список проверенных = уже встречаемых = закрытых вершин
 sp_o = np.array([])
+spo_heap = []
+spo_heap = heapq.heapify(spo_heap)
 
 
 def count_inv(l_b, size_matr):
