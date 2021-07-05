@@ -23,9 +23,11 @@ import queue
 
 
 def main():
-    sp_z = np.array([])
-    sp_z_node = []
-    # sp_z = {}
+    # sp_z = np.array([])
+    sp_z = {}
+
+    # sp_z_node_d = {}
+
 
     # q = queue.PriorityQueue()
     # spo_heapq = []
@@ -91,9 +93,10 @@ def main():
             # if (ch_c.f, ch_c) not in spo_heap:
             #     heapq.heappush(spo_heap, (ch_c.f, ch_c))
     #  после заполнения ночальных условий
-    sp_z = np.append(sp_z, A)  # создали всех детей == закрыли вершину
-    sp_z_node.append(A.node)
-    # sp_z[A] = A.par
+    # sp_z = np.append(sp_z, A)  # создали всех детей == закрыли вершину
+    # sp_z_node.append(A.node)
+    # sp_z_node_d[str(A.node)] = A
+    sp_z[A] = A.par
     # while not q.empty():
 
     while not q.empty():
@@ -128,25 +131,28 @@ def main():
 
                 # sp_z_node = [sp_z[i].node for i in range(len(sp_z))]
                 ch_c = Node(size_matr, min, c, min.g + 1, num_h_ver)
-                if ch_c.node not in sp_z_node:
+
+                if str(ch_c.node) not in [str(i.node) for i in sp_z.keys()]:
                     q.put((ch_c.f, ch_c))
                     # heapq.heappush(spo_heapq, (ch_c.f, ch_c))
             # а что если добавим сразу только один с минимальным весом ???
 
 
-            sp_z = np.append(sp_z, min)
-            sp_z_node.append(min.node)
-            # sp_z[min] = min.par
+            # sp_z = np.append(sp_z, min)
+            # sp_z_node.append(min.node)
+            # sp_z_node_d[str(min.node)] = min
+            sp_z[min] = min.par
         else:
-            # sp_z[min] = min.par
-            sp_z = np.append(sp_z, min)
-            sp_z_node.append(min.node)
+            sp_z[min] = min.par
+            # sp_z = np.append(sp_z, min)
+            # sp_z_node.append(min.node)
+            # sp_z_node_d[str(min.node)] = min
 
             # sp_z.append(min)
             # print("КОНЕЦ", min.node)
-            path_print(min, sp_z, size_matr)
+            # path_print(min, sp_z, size_matr)
 
-            # path_print2(min, sp_z, size_matr)
+            path_print2(min, sp_z, size_matr)
             print("всё оке")
             break
     t_2 = time.time()
