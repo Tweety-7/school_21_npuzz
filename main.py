@@ -5,6 +5,7 @@ from node_c import Node
 from func import *
 from node_c import must_be
 # import heapq
+import queue
 import sys
 import queue
 # список открытых = непроверенных вершин - тут все дети -> очередь теперь
@@ -24,10 +25,12 @@ import queue
 def main():
     sp_z = np.array([])
     sp_z_node = []
+    # sp_z = {}
 
     # q = queue.PriorityQueue()
-    spo_heapq = []
-    heapq.heapify(spo_heapq)
+    # spo_heapq = []
+    # heapq.heapify(spo_heapq)
+    q = queue.PriorityQueue()
     # a = [1,2,5]
     # b = list(map(str, a))
     # c = ''.join(b)
@@ -83,23 +86,25 @@ def main():
         ch_c = Node(size_matr, A, c, 1, num_h_ver)
         if ch_c.node == ch_c.must_be_str:
             print("одна перестановка - подвинь на 0 == конечное")
-        heapq.heappush(spo_heapq,(ch_c.f, ch_c))
-        # q.put((ch_c.f, ch_c))
+        # heapq.heappush(spo_heapq,(ch_c.f, ch_c))
+        q.put((ch_c.f, ch_c))
             # if (ch_c.f, ch_c) not in spo_heap:
             #     heapq.heappush(spo_heap, (ch_c.f, ch_c))
     #  после заполнения ночальных условий
     sp_z = np.append(sp_z, A)  # создали всех детей == закрыли вершину
     sp_z_node.append(A.node)
+    # sp_z[A] = A.par
     # while not q.empty():
 
-    while spo_heapq:
+    while not q.empty():
 
         #     1. найти в  открытом списке вершину с минимальным весом
         # min = check_min_ves(sp_o, sp_z_node)
         # if not q.empty():
-        # min_q = q.get()
+        min = q.get()[1]
         # min = min_q[1]
-        min = heapq.heappop(spo_heapq)[1]
+
+        # min = heapq.heappop(spo_heapq)[1]
         # min = min_q[1]
         # while min in sp_z:
         #     min_h = heapq.heappop(spo_heapq)
@@ -124,20 +129,24 @@ def main():
                 # sp_z_node = [sp_z[i].node for i in range(len(sp_z))]
                 ch_c = Node(size_matr, min, c, min.g + 1, num_h_ver)
                 if ch_c.node not in sp_z_node:
-                    # q.put((ch_c.f, ch_c))
-                    heapq.heappush(spo_heapq, (ch_c.f, ch_c))
+                    q.put((ch_c.f, ch_c))
+                    # heapq.heappush(spo_heapq, (ch_c.f, ch_c))
             # а что если добавим сразу только один с минимальным весом ???
 
 
             sp_z = np.append(sp_z, min)
             sp_z_node.append(min.node)
+            # sp_z[min] = min.par
         else:
+            # sp_z[min] = min.par
             sp_z = np.append(sp_z, min)
             sp_z_node.append(min.node)
 
             # sp_z.append(min)
             # print("КОНЕЦ", min.node)
             path_print(min, sp_z, size_matr)
+
+            # path_print2(min, sp_z, size_matr)
             print("всё оке")
             break
     t_2 = time.time()

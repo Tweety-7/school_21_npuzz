@@ -88,15 +88,27 @@ def path_print(min, sp_z, size_matr):
     print("кол-во состояний = ", count)
 
 
-def not_end(min, sp_z, num_h_ver,q):
-    child = make_children(min.node, min.size)
-    for c in child:
-        sp_z_node = [sp_z[i].node for i in range(len(sp_z))]
-        ch_c = Node(min.size, min, c.split("/"), min.g + 1, num_h_ver)
-        if ch_c.node not in sp_z_node:
-            q.put((ch_c.f, ch_c))
-            sp_z = np.append(sp_z, min)
-    return sp_z
+def path_print2(min, sp_z, size_matr):
+    # sp_z - список всех вершин
+    count = 0
+    print('печать полного пути')
+    sp_path = []
+    while min:
+        sp_path.append(min.node)
+        min = sp_z[min]
+        # min = 0
+    sp_path.reverse()
+    # print(sp_path)
+    for sp in sp_path:
+        # print(sp)
+        count += 1
+        for i in range(len(sp)):
+            if i % size_matr == size_matr - 1:
+                print(sp[i], end='\n')
+            else:
+                print(sp[i], end=' ')
+        print("-----след ход")
+    print("кол-во состояний = ", count)
 
 
 
