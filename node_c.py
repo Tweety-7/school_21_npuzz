@@ -57,9 +57,10 @@ class Node:
             self.h = round(self.ves_Manhattan())
         else:
             self.h = self.ves_h()
-        # self.h = round(self.ves_pifag())
-        #
-        self.f = self.h
+        if self.size <4:
+            self.f = self.h + self.g
+        else:
+            self.f = self.h
         # print(self.f)
     def __lt__(self, other):# >
         return (self.g > other.g)

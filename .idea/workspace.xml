@@ -2,21 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0eccf649-0b04-4e3e-ae80-d4761ce7b853" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/func.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/five" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/five2" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/node_c.py" beforeDir="false" afterPath="$PROJECT_DIR$/node_c.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/one" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/one_one" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/seven" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/seven2" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/three" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tre_not" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/two" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/two4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/two_not" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,7 +57,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
-      <option name="PARAMETERS" value="in_puzz/two4 2" />
+      <option name="PARAMETERS" value="in_puzz/five77 2" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
