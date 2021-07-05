@@ -49,6 +49,7 @@ class Node:
         self.node = node
         self.par = par
         self.g = step_to_f #кол-во шагов до
+
         self.must_be_str = str(must_be(self.size)).split('/')
         if ver_h == 1:
             self.h = round(self.ves_pifag())
@@ -58,7 +59,7 @@ class Node:
             self.h = self.ves_h()
         # self.h = round(self.ves_pifag())
         #
-        self.f = self.h + self.g
+        self.f = self.h
         # print(self.f)
     def __lt__(self, other):# >
         return (self.g > other.g)
