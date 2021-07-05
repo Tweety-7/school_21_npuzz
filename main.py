@@ -50,10 +50,21 @@ def main():
     except Exception:
         num_h_ver = 0
     with open(file_name, "r") as file:
-        size_matr = int(file.readline())
+        line = file.readline()
+        l_p = line.partition('#')[0]
+        while not l_p:
+            line = file.readline()
+            l_p = line.partition("#")[0]
+
+        
+        size_matr = int(l_p)
         line = file.readline()
         n_str = 1
         while line:
+            line = line.partition('#')[0]
+            while not line:
+                line = file.readline()
+                line = line.partition("#")[0]
             # line += ' '
             plus = '/'.join(line.split())
             bb += '/'.join(line.split())
