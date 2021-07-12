@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 import math
 import pandas as pd
 
+=======
+import pandas as pd
+import math
+>>>>>>> main
 def must_be(n):
     # конечная растановка фигур (спираль)
     # возвращает идеальный конечный узел = строку
@@ -43,18 +48,28 @@ def must_be(n):
 class Node:
 #    размер, родитель, строка всех значений(узел), кол-во шагов до точки
 #  == f func
-    def __init__(self, size, par, node, step_to_f):
+    def __init__(self, size, par, node, step_to_f, ver_h=0):
+        # print('nooooooooooooooode')
+        # print(ver_h)
         self.size = size
         self.node = node
         self.par = par
         self.g = step_to_f #кол-во шагов до
-        self.must_be_str = str(must_be(self.size)).split('/')
 
-        self.h = self.ves_h()
-        # self.h = round(self.ves_pifag())
-        # self.h = round(self.ves_Manhattan())
-        self.f = self.h + self.g
+        self.must_be_str = str(must_be(self.size)).split('/')
+        if ver_h == 1:
+            self.h = round(self.ves_pifag())
+        elif ver_h == 2:
+            self.h = round(self.ves_Manhattan())
+        else:
+            self.h = self.ves_h()
+        if self.size <4:
+            self.f = self.h + self.g
+        else:
+            self.f = self.h
         # print(self.f)
+    def __lt__(self, other):# >
+        return (self.g > other.g)
     def ves_h(self): #кол-во цифр не на своем месте
         ves = 0
         for i in range(len(self.node)):
@@ -69,7 +84,7 @@ class Node:
         sp_0 = []
         sp_2 = []
         for i in range(len(self.node)):
-            if i % size_matr == 0 and i != 0:
+            if i % self.size == 0 and i != 0:
                 sp_sp.append(sp_0)
                 spsp_2.append(sp_2)
                 sp_0 = []
@@ -115,7 +130,7 @@ class Node:
         sp_0 = []
         sp_2 = []
         for i in range(len(self.node)):
-            if i % size_matr == 0 and i != 0:
+            if i % self.size == 0 and i != 0:
                 sp_sp.append(sp_0)
                 spsp_2.append(sp_2)
                 sp_0 = []
@@ -141,3 +156,23 @@ class Node:
                 nj = df_must_be[df_must_be == num].index[1]
                 ves += math.sqrt((i - ni) * (i - ni) + (j - nj) * (j - nj))
         return ves
+# def h_xy(x1,y1, x2, y2):
+#     # предположение до достижение конца(минимальное кол-во перестановок
+#     # исходя из координат) == МАНХЕТАН
+#     # для каждого числа будет только одно конечное значение
+#
+#     # вес = кол-ву перемещений из 1 в 2
+#     return (abs(x2-x1) + abs(y2 -y1))
+# не сначала сделаю прост по кол-ву фишек не на своих
+#  местах/ не знаю где лучше кооэф хранить
+
+# def h_xy (s1, s2):
+#     ves = 0
+#     # перевести строку в дф?
+#     df1 = pd.DataFrame(s1)
+#     df2 = pd.DataFrame(s2)
+#     for i in range(len(df1)):
+#         for j in range(df1):
+#             if df2[i][j] != df1[i][j]:
+#                 ves += 1
+#     return ves
