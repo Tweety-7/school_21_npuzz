@@ -1,5 +1,8 @@
 from node_c import *
 import numpy as np
+from Printer import Printer
+from const import YELLOW, RESET
+
 def count_inv(l_b, size_matr):
     inx_0 = l_b.index(str(0))
     inv = inx_0 // size_matr + 1
@@ -91,7 +94,8 @@ def path_print(min, sp_z, size_matr):
 def path_print2(min, sp_z, size_matr):
     # sp_z - список всех вершин
     count = 0
-    print('печать полного пути')
+    print('Ordered sequence of states that make up the solution')
+    Printer.print_endline()
     sp_path = []
     while min:
         sp_path.append(min.node)
@@ -99,16 +103,21 @@ def path_print2(min, sp_z, size_matr):
         # min = 0
     sp_path.reverse()
     # print(sp_path)
+
     for sp in sp_path:
-        # print(sp)
+        curr_move_lst = []
+        if (count > 0):
+            curr_move_lst = [i for i in range(len(sp)) if sp[i] != sp_prev[i]]
+        sp_prev = sp
         count += 1
         for i in range(len(sp)):
+            color = YELLOW if i in curr_move_lst else RESET
             if i % size_matr == size_matr - 1:
-                print(sp[i], end='\n')
+                print(f'{color}{sp[i]}{RESET}', end='\n')
             else:
-                print(sp[i], end=' ')
-        print("-----след ход")
-    print("кол-во состояний = ", count)
+                print(f'{color}{sp[i]}{RESET}', end=' ')
+        Printer.print_endline()
+    print("Number of moves from initial state to solution = ", count)
 
 
 

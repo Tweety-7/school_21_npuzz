@@ -1,11 +1,3 @@
-from enum import Enum
-
-EPSILON = 0.000001
-OPERATORS = r"\*\/\-\+\^"
-DIGITS = "0123456789"
-VALID_ARGS = ["--debug", "--vis"]
-
-
 class Mode:
     DEBUG_MODE = False
     VIS_MODE = False

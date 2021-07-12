@@ -1,12 +1,14 @@
 import pygame
 import numpy as np
 
+
 class Visualizator:
 	def __init__(self, grid_size, ts, ms, grid, grid_full):
 		self.grid_size, self.ts, self.ms = grid_size, ts, grid_size
 		self.tiles_len = grid_size[0] * grid_size[1] - 1
-		self.tiles = [(x,y) for y in range(grid_size[1]) for x in range(grid_size[0])]
+		self.tiles = [(x, y) for y in range(grid_size[1]) for x in range(grid_size[0])]
 		self.tiles_v = [x for x in grid]
+
 		self.tilespos = [(x*(ts+ms)+ms,y*(ts+ms)+ms) for y
             in range(grid_size[1])
             for x in range(grid_size[0])]
@@ -27,23 +29,23 @@ class Visualizator:
 			image = pic.subsurface(x, y, ts, ts)
 			self.images += [image]
 
-	def getBlank(self):
+	def get_blank(self):
 		for i in range(len(self.tiles_v)):
 			if self.tiles_v[i] == 0:
 				return self.tiles[i]
 
-	def setBlank(self, pos):
+	def set_blank(self, pos):
 		for i in range(len(self.tiles_v)):
 			if self.tiles_v[i] == 0:
 				self.tiles[i] = pos
 
-	opentile = property(getBlank, setBlank)
+	opentile = property(get_blank, set_blank)
 
-	def sliding(self) :
+	def sliding(self):
 		for i in range(self.tiles_len):
 			x, y = self.tilespos[i]
-			X, Y = self.tilesPOS[self.tiles[i]]
-			if x != X or y != Y:
+			xx, yy = self.tilesPOS[self.tiles[i]]
+			if x != xx or y != yy:
 				return True
 		return False
 
@@ -57,8 +59,8 @@ class Visualizator:
 		while x != len(state[0]):
 			y = 0
 			while y != len(state[0]):
-				if (state[y][x] == 0):
-					return (x, y)
+				if state[y][x] == 0:
+					return x, y
 				y += 1
 			x += 1
 
@@ -78,17 +80,17 @@ class Visualizator:
 			self.reverse = 0
 		s = self.speed_slide * dt
 		for i in range(self.tiles_len + 1):
-			x,y = self.tilespos[i]
-			X,Y = self.tilesPOS[self.tiles[i]]
-			dx, dy = X - x, Y- y
-			x = X if abs(dx) < s else x + s if dx > 0 else x - s
-			y = Y if abs(dy) < s else y + s if dy > 0 else y - s
-			self.tilespos[i] = x,y
+			x, y = self.tilespos[i]
+			xx, yy = self.tilesPOS[self.tiles[i]]
+			dx, dy = xx - x, yy - y
+			x = xx if abs(dx) < s else x + s if dx > 0 else x - s
+			y = yy if abs(dy) < s else y + s if dy > 0 else y - s
+			self.tilespos[i] = x, y
 		pass
 
 	def draw(self, screen):
 		for i in range(self.tiles_len + 1):
-			x,y = self.tilespos[i]
+			x, y = self.tilespos[i]
 			screen.blit(self.images[i], (x, y))
 
 	def events(self, event):

@@ -1,3 +1,5 @@
+import sys
+
 from const import GREEN, RED, RESET, YELLOW
 from const import Mode
 
@@ -6,8 +8,7 @@ class Printer:
 
     @staticmethod
     def print_endline():
-        if Mode.VERBOSE_MODE:
-            print(GREEN, '=' * 100, RESET)
+        print(f'{GREEN}{"=" * 20}{RESET}')
 
     @staticmethod
     def print_error(text):
@@ -37,4 +38,12 @@ class Printer:
         if Mode.DEBUG_MODE:
             print(text, end)
 
+    @staticmethod
+    def print_usage():
+        print(f'{GREEN}Usage: python n-puzzle.py path-to-map [--hf heuristic function]')
+        print('heuristics:')
+        print(f'\t1 - Euclidean distance')
+        print(f'\t2 - Manhattan distance')
+        print(f'\t3 - Not-in-place metric{RESET}')
+        sys.exit(0)
         

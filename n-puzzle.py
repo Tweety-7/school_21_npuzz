@@ -1,18 +1,14 @@
-import heapq
-import math
-import time
+
 import numpy as np
-
+import time
 from Printer import Printer
-
-from node_c import Node
+from const import Mode
 from func import *
-from node_c import must_be
-# import heapq
-import queue
 import sys
 import queue
 import argparse
+from visualization import visualizate
+from images import create_image
 
 # список открытых = непроверенных вершин - тут все дети -> очередь теперь
 # sp_z = []  # список проверенных = уже встречаемых = закрытых вершин
@@ -24,6 +20,7 @@ import argparse
 # spo_heap = []
 # heapq.heapify(spo_heap)
 # вместо heap прбую очередь приоритетную
+
 
 
 
@@ -80,6 +77,7 @@ def main():
     sp_z[A] = A.par
     # while not q.empty():
 
+    success = 0
     while not q.empty():
 
         #     1. найти в  открытом списке вершину с минимальным весом
@@ -134,12 +132,30 @@ def main():
             # path_print(min, sp_z, size_matr)
 
             path_print2(min, sp_z, size_matr)
-            print("всё оке")
+            #print("всё оке")
+            success = 1
             break
     t_2 = time.time()
     dt = t_2 - t_1
-    print("время = ", dt)
-    print(childrens)
+    print(f"complexity in time = {dt:0.6f}")
+    print(f"complexity in size = {childrens}")
+    if success:
+        if Mode.VIS_MODE:
+            schema = [int(x) for x in b.split("/")]
+            schema = [x.tolist() for x in np.array_split(schema, size_matr)]
+
+            path = get_path2(min, sp_z)
+            start_board = path[-1][:]
+            print(start_board)
+            fullpath = []
+            for p in path:
+                p = [int(x) for x in p]
+                fullpath.append([x.tolist() for x in np.array_split(p, size_matr)])
+
+            print(start_board)
+            create_image(start_board)
+            print(size_matr)
+            visualizate(schema, fullpath, size_matr)
     return
 
 #     если конечное - выходим - востанавливаем ролдителей всего пути?
@@ -149,21 +165,15 @@ def main():
 
 def parse_argv(argv):
     if len(argv) == 1:
-        print_usage()
+        Printer.print_usage()
     parser = argparse.ArgumentParser()
     parser.add_argument("file_name")
     parser.add_argument("--hf", type=int, dest='num_h_ver', default=0)
+    parser.add_argument("--v", action="store_true", help="Enable visualization")
     args = parser.parse_args()
+    if args.v:
+        Mode.VIS_MODE = True
     return args
-
-
-def print_usage():
-    print(f'{Printer.GREEN}Usage: python n-puzzle.py path-to-map [--hf heuristic function]')
-    print('heuristics:')
-    print(f'\t1 - Euclidean distance')
-    print(f'\t2 - Manhattan distance')
-    print(f'\t3 - Not-in-place metric{Printer.RESET}')
-    sys.exit(0)
 
 
 def parse_int(s):
@@ -228,6 +238,31 @@ def parse_map(file_name):
     #print("read file = ok")
     # print("bb ' ",bb)
     return bb
+
+
+def get_path2(min, sp_z):
+    sp_path = []
+    while min:
+        sp_path.append(min.node)
+        min = sp_z[min]
+        # min = 0
+    sp_path.reverse()
+    return sp_path
+
+
+def get_path(min, sp_z):
+    sp_path = []
+    while min:
+        sp_path.append(min.node)
+        for min_2 in sp_z:
+            if (min.par == min_2):
+                min =min_2
+                break
+            if min_2 == sp_z[-1]:
+                min = 0
+        # min = 0
+    sp_path.reverse()
+    return sp_path
 
 
 if __name__ == '__main__':
