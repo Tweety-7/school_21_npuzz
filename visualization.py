@@ -28,8 +28,8 @@ def run_visualization(size, h, w, grid, tile_size, grid_full):
 		program.update(dt)
 
 def visualizate(grid, steps, n):
-	if n > 20:
-		print("Max puzzle size is 20x20, otherwise it does not fit the screen.")
+	if n > 16:
+		print("Max puzzle size for visualization is 16")
 		return
 	if steps == None:
 		print("Visualizer is useless if puzzle is already solved.")

@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-import math
-import pandas as pd
-
-=======
 import pandas as pd
 import math
->>>>>>> main
 def must_be(n):
     # конечная растановка фигур (спираль)
     # возвращает идеальный конечный узел = строку

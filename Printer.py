@@ -1,9 +1,8 @@
 from const import GREEN, RED, RESET, YELLOW
 from const import Mode
 
+
 class Printer:
-    def __init__(self) -> None:
-        pass
 
     @staticmethod
     def print_endline():

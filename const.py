@@ -9,7 +9,7 @@ VALID_ARGS = ["--debug", "--vis"]
 class Mode:
     DEBUG_MODE = False
     VIS_MODE = False
-
+    VERBOSE_MODE = False
 
 BLACK = '\033[30m'
 RED = '\033[31m'
