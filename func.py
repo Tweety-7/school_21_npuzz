@@ -29,6 +29,7 @@ def can_i_do_it(b, n):
     if c_b % 2 != c_m % 2:
         print("для данной матрицы решения неть =(. инверсии не совпадают")
         exit(0)
+
 def make_children(list_p, n):
     per_l = list_p
     sun = []

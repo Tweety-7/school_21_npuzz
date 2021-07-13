@@ -1,6 +1,6 @@
-
-import numpy as np
 import time
+import cProfile
+import pstats
 from Printer import Printer
 from const import Mode
 from func import *
@@ -10,41 +10,10 @@ import argparse
 from visualization import visualizate
 from images import create_image
 
-# список открытых = непроверенных вершин - тут все дети -> очередь теперь
-# sp_z = []  # список проверенных = уже встречаемых = закрытых вершин
-
-# sp_z = np.array([])
-# sp_z_node = np.array([])
-
-# q = queue.PriorityQueue()
-# spo_heap = []
-# heapq.heapify(spo_heap)
-# вместо heap прбую очередь приоритетную
-
-
-
-
-
 def main():
-    # sp_z = np.array([])
     sp_z = {}
-
-    # sp_z_node_d = {}
-
-
-    # q = queue.PriorityQueue()
-    # spo_heapq = []
-    # heapq.heapify(spo_heapq)
+    dict_closed = {}
     q = queue.PriorityQueue()
-    # a = [1,2,5]
-    # b = list(map(str, a))
-    # c = ''.join(b)
-    # print(c)
-    # b = '123840765'
-
-
-    # b = '123860754'
-    # b = '1/2/0/8/6/3/7/5/4'
     t_1 = time.time()
 
     argv = parse_argv(sys.argv)
@@ -54,91 +23,49 @@ def main():
 
     can_i_do_it(b, size_matr)  # проверим возможность решения
     ch = make_children(b.split("/"), size_matr)  # для исходного состояния рождаем детей(макс 4)
-    childrens += 1
+    childrens += 4
+    must_be_str = str(must_be(size_matr)).split('/')
 # и добавляем всех в список открытых вершин
 
-    A = Node(size_matr, None, b.split("/"), 0, argv.num_h_ver)
+    A = Node(size_matr, None, b.split("/"), 0,  must_be_str, argv.num_h_ver)
     if A.must_be_str == A.node:
         print("исходное состояние == конечному")
         sys.exit()
 
     for c in ch:
-        ch_c = Node(size_matr, A, c, 1, argv.num_h_ver)
+        ch_c = Node(size_matr, A, c, 1, must_be_str, argv.num_h_ver)
         if ch_c.node == ch_c.must_be_str:
             print("одна перестановка - подвинь на 0 == конечное")
-        # heapq.heappush(spo_heapq,(ch_c.f, ch_c))
         q.put((ch_c.f, ch_c))
-            # if (ch_c.f, ch_c) not in spo_heap:
-            #     heapq.heappush(spo_heap, (ch_c.f, ch_c))
-    #  после заполнения ночальных условий
-    # sp_z = np.append(sp_z, A)  # создали всех детей == закрыли вершину
-    # sp_z_node.append(A.node)
-    # sp_z_node_d[str(A.node)] = A
     sp_z[A] = A.par
-    # while not q.empty():
+    closed_set = set("".join(A.node))
 
     success = 0
     while not q.empty():
-
-        #     1. найти в  открытом списке вершину с минимальным весом
-        # min = check_min_ves(sp_o, sp_z_node)
-        # if not q.empty():
         min = q.get()[1]
-        # min = min_q[1]
-
-        # min = heapq.heappop(spo_heapq)[1]
-        # min = min_q[1]
-        # while min in sp_z:
-        #     min_h = heapq.heappop(spo_heapq)
-        #     min = min_h[1]
-
-        # while min in sp_z and not q.empty():
-        #     min_q = q.get()
-        #     min = min_q[1]
-
         if min.must_be_str != min.node:
-
-            # if min.node not  in [sp_z[i].node for i in range(len(sp_z))]: # добавлять еще надо только в том случае если
-            # нет или путь до короче    or ???
-
             child = make_children(min.node, min.size)
-            childrens += 1
-
-            for c in child:  # вероятно тоже надо проверить что б ещене было
-                # или путь новой короче
-                # хотя путь короче ищем при переборе списка
-
-                # sp_z_node = [sp_z[i].node for i in range(len(sp_z))]
-                ch_c = Node(size_matr, min, c, min.g + 1, argv.num_h_ver)
-
-                if str(ch_c.node) not in [str(i.node) for i in sp_z.keys()]:
+            for c in child:
+                if "".join(c) not in closed_set:
+                    ch_c = Node(size_matr, min, c, min.g + 1, must_be_str, argv.num_h_ver)
                     q.put((ch_c.f, ch_c))
-                    # heapq.heappush(spo_heapq, (ch_c.f, ch_c))
-            # а что если добавим сразу только один с минимальным весом ???
-
-
-            # sp_z = np.append(sp_z, min)
-            # sp_z_node.append(min.node)
-            # sp_z_node_d[str(min.node)] = min
+                    childrens += 1
             sp_z[min] = min.par
+            closed_set.add("".join(min.node))
         else:
             sp_z[min] = min.par
-            # sp_z = np.append(sp_z, min)
-            # sp_z_node.append(min.node)
-            # sp_z_node_d[str(min.node)] = min
-
-            # sp_z.append(min)
-            # print("КОНЕЦ", min.node)
-            # path_print(min, sp_z, size_matr)
-
-            path_print2(min, sp_z, size_matr)
-            #print("всё оке")
             success = 1
+            path_print2(min, sp_z, size_matr)
             break
     t_2 = time.time()
     dt = t_2 - t_1
+
     print(f"complexity in time = {dt:0.6f}")
     print(f"complexity in size = {childrens}")
+    handle_visualizer(success, b, size_matr, sp_z, min)
+
+
+def handle_visualizer(success, b, size_matr, sp_z, min):
     if success:
         if Mode.VIS_MODE:
             schema = [int(x) for x in b.split("/")]
@@ -146,22 +73,12 @@ def main():
 
             path = get_path2(min, sp_z)
             start_board = path[-1][:]
-            print(start_board)
             fullpath = []
             for p in path:
                 p = [int(x) for x in p]
                 fullpath.append([x.tolist() for x in np.array_split(p, size_matr)])
-
-            print(start_board)
             create_image(start_board)
-            print(size_matr)
             visualizate(schema, fullpath, size_matr)
-    return
-
-#     если конечное - выходим - востанавливаем ролдителей всего пути?
-#  при том каждую аершину берем с минимальным g весом???
-#
-
 
 def parse_argv(argv):
     if len(argv) == 1:
@@ -245,7 +162,6 @@ def get_path2(min, sp_z):
     while min:
         sp_path.append(min.node)
         min = sp_z[min]
-        # min = 0
     sp_path.reverse()
     return sp_path
 
@@ -260,10 +176,14 @@ def get_path(min, sp_z):
                 break
             if min_2 == sp_z[-1]:
                 min = 0
-        # min = 0
     sp_path.reverse()
     return sp_path
 
 
 if __name__ == '__main__':
+    '''
+    cProfile.run('main()', 'mainstats')
+    p = pstats.Stats('mainstats')
+    p.strip_dirs().sort_stats(pstats.SortKey.CUMULATIVE).print_stats()
+    '''
     main()
