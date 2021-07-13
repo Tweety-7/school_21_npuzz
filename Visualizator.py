@@ -1,7 +1,6 @@
 import pygame
 import numpy as np
 
-
 class Visualizator:
 	def __init__(self, grid_size, ts, ms, grid, grid_full):
 		self.grid_size, self.ts, self.ms = grid_size, ts, grid_size

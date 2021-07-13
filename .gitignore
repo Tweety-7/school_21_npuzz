@@ -1,8 +1,10 @@
 venv
 env
 env7
+windows-env
 .idea
 .vscode
+**/windows-env
 **/venv
 **/env
 **/.idea

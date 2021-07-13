@@ -1,5 +1,5 @@
-import pandas as pd
 import math
+
 def must_be(n):
     # конечная растановка фигур (спираль)
     # возвращает идеальный конечный узел = строку
@@ -42,113 +42,62 @@ def must_be(n):
 class Node:
 #    размер, родитель, строка всех значений(узел), кол-во шагов до точки
 #  == f func
-    def __init__(self, size, par, node, step_to_f, ver_h=0):
+    def __init__(self, size, par, node, step_to_f, must_be_str, ver_h=0):
         # print('nooooooooooooooode')
         # print(ver_h)
         self.size = size
         self.node = node
         self.par = par
         self.g = step_to_f #кол-во шагов до
-
-        self.must_be_str = str(must_be(self.size)).split('/')
+        self.must_be_str = must_be_str
         if ver_h == 1:
             self.h = round(self.ves_pifag())
         elif ver_h == 2:
             self.h = round(self.ves_Manhattan())
         else:
             self.h = self.ves_h()
-        if self.size <4:
+        if self.size < 4:
             self.f = self.h + self.g
         else:
             self.f = self.h
         # print(self.f)
+
     def __lt__(self, other):# >
         return (self.g > other.g)
+
     def ves_h(self): #кол-во цифр не на своем месте
         ves = 0
         for i in range(len(self.node)):
             if self.node[i] != self.must_be_str[i]:
                 ves += 1
         # print('from Node===ok')
+        #print(ves)
         return ves
+
     def ves_Manhattan(self):
+        #print(self.must_be_str)
+        #print(self.node)
         ves = 0
-        sp_sp = []
-        spsp_2 = []
-        sp_0 = []
-        sp_2 = []
-        for i in range(len(self.node)):
-            if i % self.size == 0 and i != 0:
-                sp_sp.append(sp_0)
-                spsp_2.append(sp_2)
-                sp_0 = []
-                sp_2 = []
-                sp_2.append(self.must_be_str[i])
-                sp_0.append(self.node[i])
-            else:
-                sp_0.append(self.node[i])
-                sp_2.append(self.must_be_str[i])
-        sp_sp.append(sp_0)
-        spsp_2.append(sp_2)
-        # print(sp_sp) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        df_1 = pd.DataFrame(sp_sp)
-        # print(df_1)
-        df_must_be = pd.DataFrame(spsp_2)
-        # print(df_must_be)
-        # print(df_1.shape[1])
-        for i in range(df_1.shape[0]):
-            # print(i)
-            for j in range(df_1.shape[1]):
-                # print(j)
-                num = df_1.iloc[i, j]
-                # print(num)
-                ni = df_must_be[df_must_be == num].index[0]
-                nj = df_must_be[df_must_be == num].index[1]
-                ves += abs(i - ni) + abs(j - nj)
-        # for i in range(df_1.shape[0]):
-        #     for j in range(df_1.shape[1]:
-        #         print(i,j)
-                # num = df_1[i,j]
-                # ind = df_must_be[df_must_be == num]
-                # print(ind)
-
-        # print(self.must_be_str)
-        # print(self.node)
+        for i in range(self.size * self.size):
+            curr_value = int(self.node[i])
+            curr_column = i % self.size
+            target_column = curr_value % self.size
+            curr_row = int(i / self.size)
+            target_row = int(curr_value / self.size)
+            ves += abs(curr_row - target_row) + abs(curr_column - target_column)
+        #print(ves)
         return ves
-
 
     def ves_pifag(self):
         ves = 0
-        sp_sp = []
-        spsp_2 = []
-        sp_0 = []
-        sp_2 = []
-        for i in range(len(self.node)):
-            if i % self.size == 0 and i != 0:
-                sp_sp.append(sp_0)
-                spsp_2.append(sp_2)
-                sp_0 = []
-                sp_2 = []
-                sp_2.append(self.must_be_str[i])
-                sp_0.append(self.node[i])
-            else:
-                sp_0.append(self.node[i])
-                sp_2.append(self.must_be_str[i])
-        sp_sp.append(sp_0)
-        spsp_2.append(sp_2)
-
-        df_1 = pd.DataFrame(sp_sp)
-        # print(df_1)
-        df_must_be = pd.DataFrame(spsp_2)
-        # print(df_must_be)
-        # print(df_1.shape[1])
-        for i in range(df_1.shape[0]):
-            # print(i)
-            for j in range(df_1.shape[1]):
-                num = df_1.iloc[i, j]
-                ni = df_must_be[df_must_be == num].index[0]
-                nj = df_must_be[df_must_be == num].index[1]
-                ves += math.sqrt((i - ni) * (i - ni) + (j - nj) * (j - nj))
+        for i in range(self.size * self.size):
+            curr_value = int(self.node[i])
+            curr_column = i % self.size
+            target_column = curr_value % self.size
+            curr_row = int(i / self.size)
+            target_row = int(curr_value / self.size)
+            ves += math.sqrt((curr_row - target_row) ** 2 + (curr_column - target_column) ** 2)
+        #print(ves)
         return ves
 # def h_xy(x1,y1, x2, y2):
 #     # предположение до достижение конца(минимальное кол-во перестановок
