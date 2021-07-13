@@ -41,9 +41,27 @@ class Printer:
     @staticmethod
     def print_usage():
         print(f'{GREEN}Usage: python n-puzzle.py path-to-map [--hf heuristic function]')
-        print('heuristics:')
+        print('heuristic functions:')
         print(f'\t1 - Euclidean distance')
-        print(f'\t2 - Manhattan distance')
-        print(f'\t3 - Not-in-place metric{RESET}')
+        print(f'\t2 - Not-in-place metric')
+        print(f'\t3 - Manhattan distance (default)')
+        print('search functions:')
+        print(f'\t1 - A* algorithm (default)')
+        print(f'\t2 - Greedy search')
+        print(f'\t3 - BFS{RESET}')
         sys.exit(0)
+
+    @staticmethod
+    def print_benchmark_header():
+        s = f'{"Algo name":{15}} | {"Heuristic":{20}} | moves | {"time":{8}} | {"time compl":{12}} | {"size compl":{12}}'
+        header_endline = f'{" " * 15:{15}} | {" " * 20:{20}} | {" " * 5:{5}} | {" " * 8:{8}} | {" " * 12:{12}} | {" " * 12:{12}}'
+        print(len(s) * "-")
+        print(s)
+        print(len(s) * "-")
+        #print(header_endline)
+
+    @staticmethod
+    def print_benchmark_result(puzzle):
+        print(f'{puzzle.sf_name:{15}} | {puzzle.hf_name:{20}} | {puzzle.min.g:{5}} | {puzzle.dt:{8.4}} | {puzzle.complexity_in_time:{12}} | {puzzle.complexity_in_size:{12}}')
+
         

@@ -1,34 +1,47 @@
 from node_c import *
 import numpy as np
 from Printer import Printer
-from const import YELLOW, RESET
+from const import YELLOW, RESET, Mode
 
-def count_inv(l_b, size_matr):
-    inx_0 = l_b.index(str(0))
-    inv = inx_0 // size_matr + 1
-    # print(inv)
-    # inv = (size_matr / 2) + 1 # для чётной длины стороны += номер строки в которой 0
-    if size_matr % 2 == 1:  # для нечетной
-        inv = 0
+
+def count_inv(l_b, c_m):
+    inv = 0
     for i in range(len(l_b)):
         b_i = l_b[i]
         for b_k in l_b[i + 1: len(l_b)]:
-            if b_k != str(0) and b_i != str(0):
-                if b_i > b_k:
+                if c_m.index(b_i) > c_m.index(b_k):
                     inv += 1
     return inv
 
+def count_inversions(puzzle, solved, size):
+    res = 0
+    for i in range(size * size - 1):
+        for j in range(i + 1, size * size):
+                vi = puzzle[i]
+                vj = puzzle[j]
+                if solved.index(vi) > solved.index(vj):
+                    res += 1
+    return res
+
 def can_i_do_it(b, n):
+    EMPTY_TILE = '0'
+
     list_b = b.split('/')
     str_must = must_be(n)
     list_must = str_must.split('/')
-    # для двух этих матриц посчитаем инверсию
-    # print("теперь посчитать инверсию")
-    c_b = count_inv(list_b, n)
-    c_m = count_inv(list_must, n)
-    if c_b % 2 != c_m % 2:
-        print("для данной матрицы решения неть =(. инверсии не совпадают")
-        exit(0)
+    inv = count_inv(list_b, list_must)
+
+    puzzle_zero_row = int(list_b.index(EMPTY_TILE)) // n
+    puzzle_zero_column = int(list_b.index(EMPTY_TILE)) % n
+    solved_zero_row = int(list_must.index(EMPTY_TILE)) // n
+    solved_zero_column = int(list_must.index(EMPTY_TILE)) % n
+    manhattan = abs(puzzle_zero_row - solved_zero_row) + abs(puzzle_zero_column - solved_zero_column)
+    if manhattan % 2 == 0 and inv % 2 == 0:
+        return
+    if manhattan % 2 == 1 and inv % 2 == 1:
+        return
+    Printer.print_error_exit("This map is unsovable")
+
 
 def make_children(list_p, n):
     per_l = list_p
@@ -92,11 +105,12 @@ def path_print(min, sp_z, size_matr):
     print("кол-во состояний = ", count)
 
 
-def path_print2(min, sp_z, size_matr):
+def path_print2(puzzle, min, sp_z, size_matr):
     # sp_z - список всех вершин
     count = 0
-    print('Ordered sequence of states that make up the solution')
-    Printer.print_endline()
+    if not Mode.BENCHMARK_MODE:
+        print('Ordered sequence of states that make up the solution')
+        Printer.print_endline()
     sp_path = []
     while min:
         sp_path.append(min.node)
@@ -111,14 +125,33 @@ def path_print2(min, sp_z, size_matr):
             curr_move_lst = [i for i in range(len(sp)) if sp[i] != sp_prev[i]]
         sp_prev = sp
         count += 1
+
+        if Mode.BENCHMARK_MODE:
+            continue
+
+        RESET = ""
         for i in range(len(sp)):
             color = YELLOW if i in curr_move_lst else RESET
+            color = ""
+            RESET = ""
             if i % size_matr == size_matr - 1:
-                print(f'{color}{sp[i]}{RESET}', end='\n')
+                print(f'{color}{sp[i]:{2}}{RESET}', end='\n')
             else:
-                print(f'{color}{sp[i]}{RESET}', end=' ')
+                print(f'{color}{sp[i]:{2}}{RESET}', end=' ')
         Printer.print_endline()
-    print("Number of moves from initial state to solution = ", count)
+
+
+    if Mode.BENCHMARK_MODE:
+        puzzle.path_len = count
+        puzzle.path = sp_path
+    else:
+        print(f"Algorithm: {puzzle.sf_name}")
+        print(f'Heuristic: {puzzle.hf_name}')
+        print("Number of moves from initial state to solution = ", count)
+        print(f"processing time = {puzzle.dt:0.6f}")
+        print(f"complexity in time = {puzzle.complexity_in_time}")
+        print(f"complexity in size = {puzzle.complexity_in_size}")
+
 
 
 
