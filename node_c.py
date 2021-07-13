@@ -37,14 +37,10 @@ def must_be(n):
     return st
 
 
-
-
 class Node:
 #    размер, родитель, строка всех значений(узел), кол-во шагов до точки
 #  == f func
     def __init__(self, size, par, node, step_to_f, must_be_str, ver_h=0):
-        # print('nooooooooooooooode')
-        # print(ver_h)
         self.size = size
         self.node = node
         self.par = par
@@ -53,16 +49,12 @@ class Node:
         if ver_h == 1:
             self.h = round(self.ves_pifag())
         elif ver_h == 2:
-            self.h = round(self.ves_Manhattan())
-        else:
             self.h = self.ves_h()
-        if self.size < 4:
-            self.f = self.h + self.g
         else:
-            self.f = self.h
-        # print(self.f)
+            self.h = round(self.ves_Manhattan())
+        self.f = self.h + self.g
 
-    def __lt__(self, other):# >
+    def __lt__(self, other):
         return (self.g > other.g)
 
     def ves_h(self): #кол-во цифр не на своем месте
@@ -97,25 +89,5 @@ class Node:
             curr_row = int(i / self.size)
             target_row = int(curr_value / self.size)
             ves += math.sqrt((curr_row - target_row) ** 2 + (curr_column - target_column) ** 2)
-        #print(ves)
         return ves
-# def h_xy(x1,y1, x2, y2):
-#     # предположение до достижение конца(минимальное кол-во перестановок
-#     # исходя из координат) == МАНХЕТАН
-#     # для каждого числа будет только одно конечное значение
-#
-#     # вес = кол-ву перемещений из 1 в 2
-#     return (abs(x2-x1) + abs(y2 -y1))
-# не сначала сделаю прост по кол-ву фишек не на своих
-#  местах/ не знаю где лучше кооэф хранить
 
-# def h_xy (s1, s2):
-#     ves = 0
-#     # перевести строку в дф?
-#     df1 = pd.DataFrame(s1)
-#     df2 = pd.DataFrame(s2)
-#     for i in range(len(df1)):
-#         for j in range(df1):
-#             if df2[i][j] != df1[i][j]:
-#                 ves += 1
-#     return ves

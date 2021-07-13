@@ -1,84 +1,96 @@
 import time
 import cProfile
 import pstats
-from Printer import Printer
-from const import Mode
 from func import *
+from map import *
 import sys
-import queue
+from Puzzle import Puzzle
 import argparse
-from visualization import visualizate
-from images import create_image
+from visualization import handle_visualizer
 
-def main():
-    sp_z = {}
-    dict_closed = {}
-    q = queue.PriorityQueue()
-    t_1 = time.time()
 
-    argv = parse_argv(sys.argv)
+def create_puzzle(argv):
+    puzzle = Puzzle(argv.sf, argv.num_h_ver)
+
     b = parse_map(argv.file_name)
-    size_matr = int(math.sqrt((len(b) + 1) / 2))
-    childrens = 0
+    puzzle.size_matr = int(math.sqrt((len(b) + 1) / 2))
+    can_i_do_it(b, puzzle.size_matr)  # проверим возможность решения
+    ch = make_children(b.split("/"), puzzle.size_matr)  # для исходного состояния рождаем детей(макс 4)
+    puzzle.complexity_in_size += len(ch)
+    puzzle.must_be_str = str(must_be(puzzle.size_matr)).split('/')
+    # и добавляем всех в список открытых вершин
 
-    can_i_do_it(b, size_matr)  # проверим возможность решения
-    ch = make_children(b.split("/"), size_matr)  # для исходного состояния рождаем детей(макс 4)
-    childrens += 4
-    must_be_str = str(must_be(size_matr)).split('/')
-# и добавляем всех в список открытых вершин
-
-    A = Node(size_matr, None, b.split("/"), 0,  must_be_str, argv.num_h_ver)
+    A = Node(puzzle.size_matr, None, b.split("/"), 0, puzzle.must_be_str, argv.num_h_ver)
     if A.must_be_str == A.node:
-        print("исходное состояние == конечному")
+        print("Init state is equal to goal state")
         sys.exit()
 
     for c in ch:
-        ch_c = Node(size_matr, A, c, 1, must_be_str, argv.num_h_ver)
-        if ch_c.node == ch_c.must_be_str:
-            print("одна перестановка - подвинь на 0 == конечное")
-        q.put((ch_c.f, ch_c))
-    sp_z[A] = A.par
-    closed_set = set("".join(A.node))
+        ch_c = Node(puzzle.size_matr, A, c, 1, puzzle.must_be_str, argv.num_h_ver)
+        puzzle.q.put((ch_c.f, ch_c))
+    puzzle.sp_z[A] = A.par
+    puzzle.closed_set = set(["/".join(A.node)])
+    puzzle.b = b
+    return puzzle
 
-    success = 0
-    while not q.empty():
-        min = q.get()[1]
+
+def main():
+
+    argv = parse_argv(sys.argv)
+    puzzle = create_puzzle(argv)
+
+    if argv.benchmark:
+        run_benchmark(puzzle)
+    elif argv.sf == 1:
+        run_astar(puzzle)
+    elif argv.sf == 2:
+        run_greedy(puzzle)
+    elif argv.sf == 3:
+        run_bfs(puzzle)
+    else:
+        Printer.print_error_exit("invalid search parameter")
+    if not Mode.BENCHMARK_MODE:
+        path_print2(puzzle, puzzle.min, puzzle.sp_z, puzzle.size_matr)
+        handle_visualizer(puzzle.success, puzzle.b, puzzle.size_matr, puzzle.sp_z, puzzle.min)
+
+
+def run_greedy(puzzle):
+    print("greedy mock")
+
+
+def run_bfs(puzzle):
+    print("bfs mock")
+
+
+def run_benchmark(puzzle):
+    print("benchmark mock")
+
+
+def run_astar(puzzle):
+    count = 1
+    while not puzzle.q.empty():
+        min = puzzle.q.get()[1]
+        print(min)
+        puzzle.complexity_in_time += 1
+        count += 1
+        if count == 100000: exit()
         if min.must_be_str != min.node:
             child = make_children(min.node, min.size)
             for c in child:
-                if "".join(c) not in closed_set:
-                    ch_c = Node(size_matr, min, c, min.g + 1, must_be_str, argv.num_h_ver)
-                    q.put((ch_c.f, ch_c))
-                    childrens += 1
-            sp_z[min] = min.par
-            closed_set.add("".join(min.node))
+                if "/".join(c) not in puzzle.closed_set:
+                    ch_c = Node(puzzle.size_matr, min, c, min.g + 1, puzzle.must_be_str, puzzle.num_h_ver)
+                    puzzle.q.put((ch_c.f, ch_c))
+                    puzzle.complexity_in_size += 1
+            puzzle.sp_z[min] = min.par
+            puzzle.closed_set.add("/".join(min.node))
+
         else:
-            sp_z[min] = min.par
-            success = 1
-            path_print2(min, sp_z, size_matr)
+            puzzle.sp_z[min] = min.par
+            puzzle.success = 1
+            puzzle.dt = time.time() - puzzle.t_1
+            puzzle.min = min
             break
-    t_2 = time.time()
-    dt = t_2 - t_1
 
-    print(f"complexity in time = {dt:0.6f}")
-    print(f"complexity in size = {childrens}")
-    handle_visualizer(success, b, size_matr, sp_z, min)
-
-
-def handle_visualizer(success, b, size_matr, sp_z, min):
-    if success:
-        if Mode.VIS_MODE:
-            schema = [int(x) for x in b.split("/")]
-            schema = [x.tolist() for x in np.array_split(schema, size_matr)]
-
-            path = get_path2(min, sp_z)
-            start_board = path[-1][:]
-            fullpath = []
-            for p in path:
-                p = [int(x) for x in p]
-                fullpath.append([x.tolist() for x in np.array_split(p, size_matr)])
-            create_image(start_board)
-            visualizate(schema, fullpath, size_matr)
 
 def parse_argv(argv):
     if len(argv) == 1:
@@ -87,103 +99,29 @@ def parse_argv(argv):
     parser.add_argument("file_name")
     parser.add_argument("--hf", type=int, dest='num_h_ver', default=0)
     parser.add_argument("--v", action="store_true", help="Enable visualization")
+    parser.add_argument("--sf", type=int, default=1)
+    parser.add_argument("--b", dest='benchmark', action="store_true", help="Comparise all search functions and heuristics")
+    parser.add_argument("--p", action="store_true", help="Get performance statistics")
     args = parser.parse_args()
+    if args.sf not in [1, 2, 3]:
+        args.sf = 1
     if args.v:
         Mode.VIS_MODE = True
+    if args.benchmark:
+        Mode.VIS_MODE = False
+        Mode.BENCHMARK_MODE = True
     return args
 
 
-def parse_int(s):
-    n = 0
-    try:
-        n = int(s)
-    except ValueError:
-        s_value = s.strip() if s.strip() else '{empty value}'
-        Printer.print_error_exit(f"map error: string {s_value} is not an integer")
-    return n
-
-
-def validate_map(b):
-    nums = [parse_int(s) for s in b.split("/")]
-    dict_count = {i: nums.count(i) for i in nums}
-    if max(dict_count.values()) > 1:
-        [Printer.print_error(f'map error: duplicated number {key}') for key, val in dict_count if val > 1]
-        sys.exit(1)
-    if list(filter(lambda x: x >= len(nums) or x < 0, nums)):
-        for n in nums:
-            if n >= len(nums) or n < 1:
-                Printer.print_error(f'map error: invalid number {n}: must be in range 0:{int(math.sqrt(nums))}')
-        sys.exit(1)
-
-
-
-def parse_map(file_name):
-    try:
-        f = open(file_name)
-    except FileNotFoundError:
-        Printer.print_error_exit(f"there is no file {file_name}")
-
-
-    with open(file_name, "r") as file:
-        bb = ''
-        line = file.readline()
-        l_p = line.partition('#')[0]
-        while not l_p:
-            line = file.readline()
-            l_p = line.partition("#")[0]
-
-        size_matr = parse_int(l_p)
-        line = file.readline()
-        n_str = 1
-        while line:
-            line = line.partition('#')[0]
-            while not line:
-                line = file.readline()
-                line = line.partition("#")[0]
-            # line += ' '
-            plus = '/'.join(line.split())
-            bb += '/'.join(line.split())
-            bb += '/'  # где конец строки нечего заменять =(
-            line = file.readline()
-            if (len(plus.split('/'))) != size_matr:
-                Printer.print_error_exit(f"invalid map: invalid values number at row {n_str}")
-                exit(0)
-            n_str += 1
-    bb = bb[0: -1]
-    if (n_str - 1) != size_matr:
-        Printer.print_error_exit(f'invalid map: invalid rows number = {n_str - 1}')
-    #print("read file = ok")
-    # print("bb ' ",bb)
-    return bb
-
-
-def get_path2(min, sp_z):
-    sp_path = []
-    while min:
-        sp_path.append(min.node)
-        min = sp_z[min]
-    sp_path.reverse()
-    return sp_path
-
-
-def get_path(min, sp_z):
-    sp_path = []
-    while min:
-        sp_path.append(min.node)
-        for min_2 in sp_z:
-            if (min.par == min_2):
-                min =min_2
-                break
-            if min_2 == sp_z[-1]:
-                min = 0
-    sp_path.reverse()
-    return sp_path
-
-
 if __name__ == '__main__':
-    '''
-    cProfile.run('main()', 'mainstats')
-    p = pstats.Stats('mainstats')
-    p.strip_dirs().sort_stats(pstats.SortKey.CUMULATIVE).print_stats()
-    '''
-    main()
+    profiling = False
+    for arg in sys.argv[1:]:
+        if arg == '--p':
+            profiling = True
+
+    if profiling:
+        cProfile.run('main()', 'mainstats')
+        p = pstats.Stats('mainstats')
+        p.strip_dirs().sort_stats(pstats.SortKey.CUMULATIVE).print_stats(20)
+    else:
+        main()

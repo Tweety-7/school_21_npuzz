@@ -41,9 +41,13 @@ class Printer:
     @staticmethod
     def print_usage():
         print(f'{GREEN}Usage: python n-puzzle.py path-to-map [--hf heuristic function]')
-        print('heuristics:')
+        print('heuristic functions:')
         print(f'\t1 - Euclidean distance')
-        print(f'\t2 - Manhattan distance')
-        print(f'\t3 - Not-in-place metric{RESET}')
+        print(f'\t2 - Not-in-place metric')
+        print(f'\t3 - Manhattan distance (default)')
+        print('search functions:')
+        print(f'\t1 - A* algorithm (default)')
+        print(f'\t2 - Greedy search')
+        print(f'\t3 - BFS{RESET}')
         sys.exit(0)
         

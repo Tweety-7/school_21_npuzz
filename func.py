@@ -1,7 +1,8 @@
 from node_c import *
 import numpy as np
 from Printer import Printer
-from const import YELLOW, RESET
+from const import YELLOW, RESET, Mode
+
 
 def count_inv(l_b, size_matr):
     inx_0 = l_b.index(str(0))
@@ -92,11 +93,12 @@ def path_print(min, sp_z, size_matr):
     print("кол-во состояний = ", count)
 
 
-def path_print2(min, sp_z, size_matr):
+def path_print2(puzzle, min, sp_z, size_matr):
     # sp_z - список всех вершин
     count = 0
-    print('Ordered sequence of states that make up the solution')
-    Printer.print_endline()
+    if not Mode.BENCHMARK_MODE:
+        print('Ordered sequence of states that make up the solution')
+        Printer.print_endline()
     sp_path = []
     while min:
         sp_path.append(min.node)
@@ -111,14 +113,33 @@ def path_print2(min, sp_z, size_matr):
             curr_move_lst = [i for i in range(len(sp)) if sp[i] != sp_prev[i]]
         sp_prev = sp
         count += 1
+
+        if Mode.BENCHMARK_MODE:
+            continue
+
+        RESET = ""
         for i in range(len(sp)):
             color = YELLOW if i in curr_move_lst else RESET
+            color = ""
+            RESET = ""
             if i % size_matr == size_matr - 1:
-                print(f'{color}{sp[i]}{RESET}', end='\n')
+                print(f'{color}{sp[i]:{2}}{RESET}', end='\n')
             else:
-                print(f'{color}{sp[i]}{RESET}', end=' ')
+                print(f'{color}{sp[i]:{2}}{RESET}', end=' ')
         Printer.print_endline()
-    print("Number of moves from initial state to solution = ", count)
+
+
+    if Mode.BENCHMARK_MODE:
+        puzzle.path_len = count
+        puzzle.path = sp_path
+    else:
+        print(f"Algorithm: {puzzle.sf_name}")
+        print(f'Heuristic: {puzzle.hf_name}')
+        print("Number of moves from initial state to solution = ", count)
+        print(f"processing time = {puzzle.dt:0.6f}")
+        print(f"complexity in time = {puzzle.complexity_in_time}")
+        print(f"complexity in size = {puzzle.complexity_in_size}")
+
 
 
 
