@@ -7,6 +7,7 @@ import sys
 from Puzzle import Puzzle
 import argparse
 from visualization import handle_visualizer
+from threading import Thread
 
 
 def create_puzzle(argv):
@@ -20,13 +21,13 @@ def create_puzzle(argv):
     puzzle.must_be_str = str(must_be(puzzle.size_matr)).split('/')
     # и добавляем всех в список открытых вершин
 
-    A = Node(puzzle.size_matr, None, b.split("/"), 0, puzzle.must_be_str, argv.num_h_ver)
-    if A.must_be_str == A.node:
+    A = Node(puzzle.size_matr, None, b.split("/"), 0, puzzle.sf, argv.num_h_ver, puzzle)
+    if puzzle.must_be_str == A.node:
         print("Init state is equal to goal state")
         sys.exit()
 
     for c in ch:
-        ch_c = Node(puzzle.size_matr, A, c, 1, puzzle.must_be_str, argv.num_h_ver)
+        ch_c = Node(puzzle.size_matr, A, c, 1, puzzle.sf, argv.num_h_ver, puzzle)
         puzzle.q.put((ch_c.f, ch_c))
     puzzle.sp_z[A] = A.par
     puzzle.closed_set = set(["/".join(A.node)])
@@ -34,51 +35,62 @@ def create_puzzle(argv):
     return puzzle
 
 
+class SolverThread(Thread):
+    def __init__(self, name, puzzle):
+        Thread.__init__(self)
+        self.name = name
+        self.puzzle = puzzle
+
+    def run(self):
+        solve(self.puzzle)
+
+
+def add_thread(name, sf, hf, argv, threads):
+    argv.sf = sf
+    argv.num_h_ver = hf
+    threads.append(SolverThread(name, create_puzzle(argv)))
+
+
+def create_threads(argv):
+    Printer.print_benchmark_header()
+    threads = []
+    add_thread("A* Euclidean", 1, 1, argv, threads)
+    add_thread("A* Not-in-place", 1, 2, argv, threads)
+    add_thread("A* Manhattan", 1, 3, argv, threads)
+    add_thread("Greedy Euclidean", 2, 1, argv, threads)
+    add_thread("Greedy Not-in-place", 2, 2, argv, threads)
+    add_thread("Greedy Manhattan", 2, 3, argv, threads)
+    add_thread("Breadth-first search", 3, 3, argv, threads)
+    return threads
+
 def main():
-
     argv = parse_argv(sys.argv)
-    puzzle = create_puzzle(argv)
-
     if argv.benchmark:
-        run_benchmark(puzzle)
-    elif argv.sf == 1:
-        run_astar(puzzle)
-    elif argv.sf == 2:
-        run_greedy(puzzle)
-    elif argv.sf == 3:
-        run_bfs(puzzle)
+        treads = create_threads(argv)
+        [t.start() for t in treads]
     else:
-        Printer.print_error_exit("invalid search parameter")
+        puzzle = create_puzzle(argv)
+        solve(puzzle)
+
     if not Mode.BENCHMARK_MODE:
         path_print2(puzzle, puzzle.min, puzzle.sp_z, puzzle.size_matr)
         handle_visualizer(puzzle.success, puzzle.b, puzzle.size_matr, puzzle.sp_z, puzzle.min)
 
-
-def run_greedy(puzzle):
-    print("greedy mock")
-
-
-def run_bfs(puzzle):
-    print("bfs mock")
 
 
 def run_benchmark(puzzle):
     print("benchmark mock")
 
 
-def run_astar(puzzle):
-    count = 1
+def solve(puzzle):
     while not puzzle.q.empty():
         min = puzzle.q.get()[1]
-        print(min)
         puzzle.complexity_in_time += 1
-        count += 1
-        if count == 100000: exit()
-        if min.must_be_str != min.node:
+        if puzzle.must_be_str != min.node:
             child = make_children(min.node, min.size)
             for c in child:
                 if "/".join(c) not in puzzle.closed_set:
-                    ch_c = Node(puzzle.size_matr, min, c, min.g + 1, puzzle.must_be_str, puzzle.num_h_ver)
+                    ch_c = Node(puzzle.size_matr, min, c, min.g + 1, puzzle.sf, puzzle.num_h_ver, puzzle)
                     puzzle.q.put((ch_c.f, ch_c))
                     puzzle.complexity_in_size += 1
             puzzle.sp_z[min] = min.par
@@ -90,6 +102,8 @@ def run_astar(puzzle):
             puzzle.dt = time.time() - puzzle.t_1
             puzzle.min = min
             break
+    if Mode.BENCHMARK_MODE:
+        Printer.print_benchmark_result(puzzle)
 
 
 def parse_argv(argv):
@@ -119,9 +133,12 @@ if __name__ == '__main__':
         if arg == '--p':
             profiling = True
 
-    if profiling:
-        cProfile.run('main()', 'mainstats')
-        p = pstats.Stats('mainstats')
-        p.strip_dirs().sort_stats(pstats.SortKey.CUMULATIVE).print_stats(20)
-    else:
-        main()
+    try:
+        if profiling:
+            cProfile.run('main()', 'mainstats')
+            p = pstats.Stats('mainstats')
+            p.strip_dirs().sort_stats(pstats.SortKey.CUMULATIVE).print_stats(20)
+        else:
+            main()
+    except Exception:
+        Printer.print_error_exit("Can`t solve this map. Maybe it is unsovable")

@@ -21,6 +21,8 @@ class Puzzle:
         self.hf_name = None
         self.set_sf_name(sf_num)
         self.set_hf_name(sf_num, hf_num)
+        self.sf = sf_num
+        self.dt = 0
 
 
     def set_sf_name(self, sf_num):
@@ -32,7 +34,7 @@ class Puzzle:
             self.sf_name = "A* algorithm"
 
     def set_hf_name(self, sf_num, hf_num):
-        if sf_num == 1:
+        if sf_num in [1, 2]:
             if hf_num == 1:
                 self.hf_name = "Euclidean distance"
             elif hf_num == 2:

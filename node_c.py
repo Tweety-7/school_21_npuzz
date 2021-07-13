@@ -40,19 +40,22 @@ def must_be(n):
 class Node:
 #    размер, родитель, строка всех значений(узел), кол-во шагов до точки
 #  == f func
-    def __init__(self, size, par, node, step_to_f, must_be_str, ver_h=0):
+    def __init__(self, size, par, node, step_to_f, sf, hf, puzzle):
         self.size = size
         self.node = node
         self.par = par
-        self.g = step_to_f #кол-во шагов до
-        self.must_be_str = must_be_str
-        if ver_h == 1:
-            self.h = round(self.ves_pifag())
-        elif ver_h == 2:
-            self.h = self.ves_h()
+        self.g = step_to_f
+        self.puzzle = puzzle
+        if sf == 3:
+            self.f = self.g
         else:
-            self.h = round(self.ves_Manhattan())
-        self.f = self.h + self.g
+            if hf == 1:
+                self.h = round(self.ves_pifag())
+            elif hf == 2:
+                self.h = self.ves_h()
+            else:
+                self.h = round(self.ves_Manhattan())
+            self.f = self.h + self.g if sf == 1 else self.h
 
     def __lt__(self, other):
         return (self.g > other.g)
@@ -60,7 +63,7 @@ class Node:
     def ves_h(self): #кол-во цифр не на своем месте
         ves = 0
         for i in range(len(self.node)):
-            if self.node[i] != self.must_be_str[i]:
+            if self.node[i] != self.puzzle.must_be_str[i]:
                 ves += 1
         # print('from Node===ok')
         #print(ves)

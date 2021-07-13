@@ -92,8 +92,8 @@ if __name__ == "__main__":
 		print("# This puzzle is %s" % "solvable")
 	else:
 	    print("# This puzzle is %s" % ("unsolvable"))
-	print(w, s)
+	print(s)
 	for y in range(s):
 		for x in range(s):
-			print("%s" % (str(puzzle[x + y*s]).rjust(w)))
+			print("%s" % (str(puzzle[x + y*s]).rjust(w)), end=' ')
 		print()

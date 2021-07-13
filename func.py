@@ -4,32 +4,44 @@ from Printer import Printer
 from const import YELLOW, RESET, Mode
 
 
-def count_inv(l_b, size_matr):
-    inx_0 = l_b.index(str(0))
-    inv = inx_0 // size_matr + 1
-    # print(inv)
-    # inv = (size_matr / 2) + 1 # для чётной длины стороны += номер строки в которой 0
-    if size_matr % 2 == 1:  # для нечетной
-        inv = 0
+def count_inv(l_b, c_m):
+    inv = 0
     for i in range(len(l_b)):
         b_i = l_b[i]
         for b_k in l_b[i + 1: len(l_b)]:
-            if b_k != str(0) and b_i != str(0):
-                if b_i > b_k:
+                if c_m.index(b_i) > c_m.index(b_k):
                     inv += 1
     return inv
 
+def count_inversions(puzzle, solved, size):
+    res = 0
+    for i in range(size * size - 1):
+        for j in range(i + 1, size * size):
+                vi = puzzle[i]
+                vj = puzzle[j]
+                if solved.index(vi) > solved.index(vj):
+                    res += 1
+    return res
+
 def can_i_do_it(b, n):
+    EMPTY_TILE = '0'
+
     list_b = b.split('/')
     str_must = must_be(n)
     list_must = str_must.split('/')
-    # для двух этих матриц посчитаем инверсию
-    # print("теперь посчитать инверсию")
-    c_b = count_inv(list_b, n)
-    c_m = count_inv(list_must, n)
-    if c_b % 2 != c_m % 2:
-        print("для данной матрицы решения неть =(. инверсии не совпадают")
-        exit(0)
+    inv = count_inv(list_b, list_must)
+
+    puzzle_zero_row = int(list_b.index(EMPTY_TILE)) // n
+    puzzle_zero_column = int(list_b.index(EMPTY_TILE)) % n
+    solved_zero_row = int(list_must.index(EMPTY_TILE)) // n
+    solved_zero_column = int(list_must.index(EMPTY_TILE)) % n
+    manhattan = abs(puzzle_zero_row - solved_zero_row) + abs(puzzle_zero_column - solved_zero_column)
+    if manhattan % 2 == 0 and inv % 2 == 0:
+        return
+    if manhattan % 2 == 1 and inv % 2 == 1:
+        return
+    Printer.print_error_exit("This map is unsovable")
+
 
 def make_children(list_p, n):
     per_l = list_p

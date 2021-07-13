@@ -36,22 +36,19 @@ def visualizate(grid, steps, n):
 	if n > 16:
 		print("Max puzzle size for visualization is 16")
 		return
-	if steps == None:
-		print("Visualizer is useless if puzzle is already solved.")
-		return
 	if n > 4:
 		tile_size = int(800 / n)
 		h, w = tile_size * n + n * 5, tile_size * n + n * 5
 	else:
-		h, w = 200 * n + n * 5, 200 * n + n * 5
-		tile_size = 200
+		a = 100
+		h, w = a * n + n * 5, a * n + n * 5
+		tile_size = a
 	steps.insert(0, grid)
 	run_visualization(n, h, w, np.concatenate(grid), tile_size, steps)
 
 
 def handle_visualizer(success, b, size_matr, sp_z, min):
-	if success and Mode.VIS_MODE and not Mode.BENCHMARK:
-		print("here")
+	if success and Mode.VIS_MODE and not Mode.BENCHMARK_MODE:
 		schema = [int(x) for x in b.split("/")]
 		schema = [x.tolist() for x in np.array_split(schema, size_matr)]
 
