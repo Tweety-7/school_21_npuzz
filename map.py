@@ -24,6 +24,13 @@ def validate_map(b):
                 Printer.print_error(f'map error: invalid number {n}: must be in range 0:{int(math.sqrt(nums))}')
         sys.exit(1)
 
+def check_file(filepath):
+    try:
+        f = open(filepath)
+        f.close()
+    except FileNotFoundError:
+        print(f"file {filepath} not accessible")
+        exit()
 
 def parse_map(file_name):
     try:

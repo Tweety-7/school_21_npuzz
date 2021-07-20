@@ -132,8 +132,6 @@ def path_print2(puzzle, min, sp_z, size_matr):
         RESET = ""
         for i in range(len(sp)):
             color = YELLOW if i in curr_move_lst else RESET
-            color = ""
-            RESET = ""
             if i % size_matr == size_matr - 1:
                 print(f'{color}{sp[i]:{2}}{RESET}', end='\n')
             else:
